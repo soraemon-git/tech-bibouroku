@@ -1,0 +1,72 @@
+{# サイドバーコンポーネント - 動的データ対応 #}
+<div class="sidebar-container">
+  {# おすすめ商品エリア #}
+  <div class="widget affiliate-widget">
+    <h3 class="widget-title">📱 おすすめ商品</h3>
+    <div class="affiliate-products">
+      {% for product in sidebar.affiliateProducts %}
+      <div class="affiliate-product">
+        {% if product.image %}
+        <div class="product-image">
+          <img src="{{ product.image }}" alt="{{ product.title }}" loading="lazy">
+        </div>
+        {% endif %}
+        <div class="product-info">
+          <h4 class="product-title">{{ product.title }}</h4>
+          <p class="product-description">{{ product.description }}</p>
+          <div class="product-price">{{ product.price }}</div>
+          <a href="{{ product.link }}" class="affiliate-link" target="_blank" rel="noopener sponsored">
+            詳細を見る
+          </a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  {# カテゴリエリア #}
+  <div class="widget category-widget">
+    <h3 class="widget-title">🏷️ カテゴリ</h3>
+    <div class="category-list">
+      {% for category in sidebar.categories %}
+      <a href="{{ category.url }}" class="category-item">
+        <span class="category-name">{{ category.name }}</span>
+        <span class="category-count">{{ category.count }}</span>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+
+  {# 人気記事エリア #}
+  <div class="widget popular-widget">
+    <h3 class="widget-title">🔥 人気記事</h3>
+    <div class="popular-posts">
+      {% for post in sidebar.popularPosts %}
+      <a href="{{ post.url }}" class="popular-post">
+        <div class="popular-post-image">
+          <img src="/images/og-image.png" alt="{{ post.title }}" loading="lazy">
+        </div>
+        <div class="popular-post-info">
+          <h4 class="popular-post-title">{{ post.title }}</h4>
+          <div class="popular-post-date">{{ post.publishDate | dateFormat }}</div>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+
+  {# SNSフォローエリア #}
+  <div class="widget social-widget">
+    <h3 class="widget-title">📢 フォローする</h3>
+    <div class="social-links">
+      <a href="#" class="social-link twitter" target="_blank" rel="noopener noreferrer">
+        <span class="social-icon">🐦</span>
+        Twitter
+      </a>
+      <a href="#" class="social-link youtube" target="_blank" rel="noopener noreferrer">
+        <span class="social-icon">📺</span>
+        YouTube
+      </a>
+    </div>
+  </div>
+</div>

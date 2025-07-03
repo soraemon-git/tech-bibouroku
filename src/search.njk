@@ -1,0 +1,118 @@
+---
+layout: base.njk
+title: 検索結果
+description: ブログ記事の検索結果
+permalink: /search/
+showLeftSidebar: false
+showRightSidebar: false
+---
+
+<section class="search-page">
+  <div class="container">
+    <h1>検索結果</h1>
+    
+    <div class="search-form">
+      <div class="search-container">
+        <input type="text" class="search-input" placeholder="記事を検索..." id="search-page-input">
+        <button class="search-button" aria-label="検索" id="search-page-button">
+          <span class="search-icon">🔍</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- カテゴリフィルター -->
+    <div class="category-filter-container">
+      <h3 class="category-filter-title">カテゴリで絞り込み</h3>
+      <div class="category-tags">
+        <button class="category-tag active" data-category="">すべて</button>
+        {% for category in sidebar.categories %}
+          {% if category.slug != 'all' %}
+          <button class="category-tag" data-category="{{ category.slug }}">{{ category.name }}</button>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+    
+    <div class="search-results-section">
+      <div id="search-query-display" class="search-query" style="display: none;">
+        <p>「<span id="search-query-text"></span>」の検索結果</p>
+      </div>
+      
+      <div id="search-results" class="search-results">
+        <div class="search-welcome">
+          <h2>記事を検索</h2>
+          <p>キーワードを入力して記事を検索できます。</p>
+          <div class="search-tips">
+            <h3>検索のヒント：</h3>
+            <ul>
+              <li>「スマ」で「スマートフォン」記事が見つかります</li>
+              <li>「PC」で「PC選び」記事が見つかります</li>
+              <li>部分一致でも検索できます</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+            <ul>
+              <li>カテゴリ名での検索：「PC」「スマートフォン」など</li>
+              <li>製品名での検索：「iPhone」「MacBook」など</li>
+              <li>複数キーワード：「レビュー 比較」など</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      
+      <div id="search-loading" class="search-loading" style="display: none;">
+        <p>検索中...</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- カテゴリデータをJavaScriptで利用可能にする -->
+<script type="application/json" id="category-data">
+{
+  "categories": [
+    {
+      "name": "すべて",
+      "slug": "",
+      "count": {{ posts | length }},
+      "posts": [
+        {%- set comma = joiner(',') -%}
+        {%- for post in posts -%}
+        {{ comma() }}{
+          "title": "{{ post.title | escape }}",
+          "url": "{{ post.url }}",
+          "date": "{{ post.publishDate }}",
+          "excerpt": "{{ post.excerpt | escape }}",
+          "category": "{{ post.category | escape }}"
+        }
+        {%- endfor -%}
+      ]
+    },
+    {%- for category in sidebar.categories -%}
+      {%- if category.slug != 'all' -%}
+    {
+      "name": "{{ category.name | escape }}",
+      "slug": "{{ category.slug }}",
+      "count": {{ category.count }},
+      "posts": [
+        {%- set comma = joiner(',') -%}
+        {%- for post in posts -%}
+          {%- if post.category == category.name -%}
+        {{ comma() }}{
+          "title": "{{ post.title | escape }}",
+          "url": "{{ post.url }}",
+          "date": "{{ post.publishDate }}",
+          "excerpt": "{{ post.excerpt | escape }}",
+          "category": "{{ post.category | escape }}"
+        }
+          {%- endif -%}
+        {%- endfor -%}
+      ]
+    }{%- if not loop.last -%},{%- endif -%}
+      {%- endif -%}
+    {%- endfor -%}
+  ]
+}
+</script>

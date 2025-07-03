@@ -1,0 +1,35 @@
+{#- 左サイドバー（人気記事・カテゴリ） -#}
+<div class="left-sidebar-container">
+  
+  {#- カテゴリウィジェット -#}
+  <div class="widget category-widget">
+    <h3 class="widget-title">📁 カテゴリ</h3>
+    <div class="category-items">
+      {% for category in sidebar.categories %}
+      <a href="{{ category.url }}" class="category-item">
+        <span class="category-name">{{ category.name }}</span>
+        <span class="category-count">{{ category.count }}</span>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+
+  {#- 人気記事ウィジェット -#}
+  <div class="widget popular-widget">
+    <h3 class="widget-title">🔥 人気記事</h3>
+    <div class="popular-posts">
+      {% for post in sidebar.popularPosts %}
+      <a href="{{ post.url }}" class="popular-post">
+        <div class="popular-post-image">
+          <img src="/images/og-image.png" alt="{{ post.title }}" loading="lazy">
+        </div>
+        <div class="popular-post-info">
+          <h4 class="popular-post-title">{{ post.title }}</h4>
+          <div class="popular-post-date">{{ post.publishDate | dateFormat }}</div>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+
+</div>

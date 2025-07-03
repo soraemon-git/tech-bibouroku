@@ -1,0 +1,65 @@
+---
+layout: base.njk
+pagination:
+  data: posts
+  size: 1
+  alias: post
+permalink: "{{ post.url }}"
+showLeftSidebar: false
+showRightSidebar: false
+eleventyComputed:
+  title: "{{ post.title }}"
+  description: "{{ post.excerpt }}"
+---
+
+<article class="post-detail">
+  <header class="post-header">
+    <div class="container">
+      <div class="post-meta">
+        <span class="category">{{ post.category }}</span>
+        <time datetime="{{ post.publishDate }}">{{ post.publishDate | dateFormat }}</time>
+        <span class="author">{{ post.author }}</span>
+      </div>
+      
+      <h1 class="post-title">{{ post.title }}</h1>
+      
+      {% if post.featuredImage %}
+      <img src="{{ post.featuredImage.fields.file.url }}" alt="{{ post.title }}" class="featured-image">
+      {% endif %}
+      
+      <div class="post-tags">
+        {% for tag in post.tags %}
+        <span class="tag">#{{ tag }}</span>
+        {% endfor %}
+      </div>
+    </div>
+  </header>
+
+  <div class="post-body">
+    <div class="container">
+      <div class="post-content">
+        <div id="post-content-body">
+          {{ post.content | markdownify | safe }}
+        </div>
+      </div>
+    </div>
+    
+    <!-- 目次を独立したサイドバーとして配置 -->
+    <aside class="post-toc-sidebar">
+      <div class="table-of-contents">
+        <h3 class="toc-title">目次</h3>
+        <nav id="toc-nav" class="toc-nav">
+          <p class="toc-loading">目次を生成中...</p>
+        </nav>
+      </div>
+    </aside>
+  </div>
+
+  <footer class="post-footer">
+    <div class="container">
+      <div class="post-navigation">
+        <a href="/blog/" class="back-to-blog">← 記事一覧に戻る</a>
+      </div>
+    </div>
+  </footer>
+</article>

@@ -1,0 +1,28 @@
+{
+  "name": "テック備忘録",
+  "description": "テクノロジー・PC・スマホに関する最新情報やちょっとした知識をお届けするサイト",
+  "url": "https://your-blog.netlify.app",
+  "author": {
+    "name": "Your Name",
+    "email": "your.email@example.com",
+    "twitter": "@yourhandle"
+  },
+  "navigation": [
+    {
+      "text": "ホーム",
+      "url": "/"
+    },
+    {
+      "text": "記事一覧",
+      "url": "/blog/"
+    },
+    {
+      "text": "検索",
+      "url": "/search/"
+    },
+    {
+      "text": "About",
+      "url": "/about/"
+    }
+  ]
+}

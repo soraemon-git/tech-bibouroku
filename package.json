@@ -1,0 +1,34 @@
+{
+  "name": "tech-blog",
+  "version": "1.0.0",
+  "description": "Technology Blog using 11ty and Contentful",
+  "main": "index.js",
+  "scripts": {
+    "dev": "eleventy --serve --watch",
+    "build": "eleventy",
+    "serve": "eleventy --serve",
+    "clean": "rm -rf _site",
+    "deploy": "npm run build && node tools/deploy.js",
+    "content-sync": "node tools/content-sync.js",
+    "create-post": "node scripts/create-post.js",
+    "new-post": "node scripts/create-post.js"
+  },
+  "keywords": [
+    "blog",
+    "11ty",
+    "contentful",
+    "jamstack"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {
+    "@11ty/eleventy": "^2.0.1",
+    "contentful": "^10.3.6",
+    "contentful-management": "^11.54.1",
+    "dotenv": "^16.3.1",
+    "markdown-it": "^14.0.0"
+  },
+  "devDependencies": {
+    "@11ty/eleventy-dev-server": "^1.0.4"
+  }
+}

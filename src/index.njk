@@ -1,0 +1,32 @@
+---
+layout: base.njk
+title: ホーム
+description: テクノロジー・PC・スマホの最新情報をお届けするブログ
+showLeftSidebar: true
+showRightSidebar: true
+---
+
+<section class="recent-posts">
+    <div class="container">
+        <h2>最新記事</h2>
+        <div class="posts-grid">
+            {% for post in posts | slice(0, 6) %}
+                <article class="post-card">
+                    <h3 class="post-card__title">
+                        <a href="{{ post.url }}">{{ post.title }}</a>
+                    </h3>
+                    <p class="post-card__excerpt">{{ post.excerpt }}</p>
+                    <div class="post-card__meta">
+                        <span class="post-card__category">{{ post.category }}</span>
+                        <time class="post-card__date" datetime="{{ post.publishDate }}">
+                            {{ post.publishDate | dateFormat }}
+                        </time>
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
+        <div class="view-all">
+            <a href="/blog/" class="btn btn--secondary">すべての記事を見る →</a>
+        </div>
+    </div>
+</section>

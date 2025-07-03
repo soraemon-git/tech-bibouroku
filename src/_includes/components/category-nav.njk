@@ -1,0 +1,52 @@
+{#- カテゴリナビゲーション -#}
+<nav class="category-nav" aria-label="記事カテゴリ">
+  <div class="category-nav-container">
+    <h3 class="category-nav-title">カテゴリから探す</h3>
+    <ul class="category-list">
+      <li class="category-item">
+        <a href="/blog/" class="category-link {% if not selectedCategory %}active{% endif %}">
+          <span class="category-name">すべて</span>
+          <span class="category-count">{{ posts | length }}</span>
+        </a>
+      </li>
+      {% for category in sidebar.categories %}
+        <li class="category-item">
+          <a href="{{ category.url }}" 
+             class="category-link {% if selectedCategory == category.name %}active{% endif %}"
+             data-category="{{ category.slug }}">
+            <span class="category-name">{{ category.name }}</span>
+            <span class="category-count">{{ category.count }}</span>
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+</nav>
+
+{#- カテゴリ絞り込み用の非表示データ -#}
+<script type="application/json" id="category-data">
+{
+  "categories": [
+    {%- for category in sidebar.categories -%}
+    {
+      "name": "{{ category.name | escape }}",
+      "slug": "{{ category.slug }}",
+      "count": {{ category.count }},
+      "posts": [
+        {%- set comma = joiner(',') -%}
+        {%- for post in posts -%}
+          {%- if post.category == category.name -%}
+        {{ comma() }}{
+          "title": "{{ post.title | escape }}",
+          "url": "{{ post.url }}",
+          "date": "{{ post.publishDate }}",
+          "excerpt": "{{ post.excerpt | escape }}"
+        }
+          {%- endif -%}
+        {%- endfor -%}
+      ]
+    }{%- if not loop.last -%},{%- endif -%}
+    {%- endfor -%}
+  ]
+}
+</script>

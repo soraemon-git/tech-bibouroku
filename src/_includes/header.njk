@@ -1,0 +1,39 @@
+<header class="site-header">
+    <div class="container">
+        <div class="header-content">
+            <div class="header-top">
+                <div class="header-left">
+                    <a href="/" class="site-logo">
+                        <h1>{{ site.name }}</h1>
+                        <p class="site-description">{{ site.description }}</p>
+                    </a>
+                </div>
+                
+                <div class="header-center">
+                    <form class="search-container" role="search">
+                        <input type="text" 
+                               class="search-input" 
+                               placeholder="記事を検索..." 
+                               id="search-input"
+                               autocomplete="off"
+                               aria-label="記事を検索">
+                        <button class="search-button" 
+                                type="submit" 
+                                aria-label="検索を実行">
+                            <span class="search-icon">🔍</span>
+                        </button>
+                        <!-- クイック検索結果がここに表示されます -->
+                    </form>
+                </div>
+            </div>
+            
+            <div class="header-right">
+                {% include "navigation.njk" %}
+                
+                <button class="theme-toggle" id="theme-toggle" aria-label="ダークモード切替">
+                    <span class="theme-icon">🌙</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</header>

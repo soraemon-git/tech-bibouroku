@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% if title %}{{ title }} | {% endif %}{{ site.name }}</title>
+    <meta name="description" content="{{ description or site.description }}">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="/css/main.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="/favicon.ico">
+    
+    <!-- OGP -->
+    <meta property="og:title" content="{{ title or site.name }}">
+    <meta property="og:description" content="{{ description or site.description }}">
+    <meta property="og:image" content="{{ site.url }}/images/og-image.png">
+    <meta property="og:url" content="{{ site.url }}{{ page.url }}">
+    <meta name="twitter:card" content="summary_large_image">
+</head>
+<body>
+    {% include "header.njk" %}
+    
+    {% set leftSidebar = showLeftSidebar %}
+    {% set rightSidebar = showRightSidebar %}
+    {% set layoutClass = "" %}
+    
+    {% if leftSidebar and rightSidebar %}
+        {% set layoutClass = "three-column" %}
+    {% elif leftSidebar and not rightSidebar %}
+        {% set layoutClass = "left-sidebar" %}
+    {% elif not leftSidebar and rightSidebar %}
+        {% set layoutClass = "right-sidebar" %}
+    {% else %}
+        {% set layoutClass = "no-sidebar" %}
+    {% endif %}
+    
+    <div class="content-wrapper {{ layoutClass }}">
+        {% if leftSidebar %}
+        <aside class="left-sidebar">
+            {% include "components/left-sidebar.njk" %}
+        </aside>
+        {% endif %}
+        
+        <main id="main-content" class="main-content">
+            {{ content | safe }}
+        </main>
+        
+        {% if rightSidebar %}
+        <aside class="right-sidebar">
+            {% include "components/right-sidebar.njk" %}
+        </aside>
+        {% endif %}
+    </div>
+    
+    {% include "footer.njk" %}
+    
+    <!-- JavaScript -->
+    <script src="/js/main.js"></script>
+    <script src="/js/search.js"></script>
+    
+    <!-- 記事詳細ページの場合のみ目次機能を読み込み -->
+    {% if layout == "base.njk" and post %}
+    <script src="/js/table-of-contents.js"></script>
+    {% endif %}
+</body>
+</html>

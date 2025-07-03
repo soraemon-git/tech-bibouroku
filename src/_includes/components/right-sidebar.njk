@@ -1,0 +1,43 @@
+{#- 右サイドバー（アフィリエイト・SNS） -#}
+<div class="right-sidebar-container">
+  
+  {#- アフィリエイトウィジェット -#}
+  <div class="widget affiliate-widget">
+    <h3 class="widget-title">📱 おすすめ商品</h3>
+    <div class="affiliate-products">
+      {% for product in sidebar.affiliateProducts %}
+      <div class="affiliate-product">
+        {% if product.image %}
+        <div class="product-image">
+          <img src="{{ product.image }}" alt="{{ product.title }}" loading="lazy">
+        </div>
+        {% endif %}
+        <div class="product-info">
+          <h4 class="product-title">{{ product.title }}</h4>
+          <p class="product-description">{{ product.description }}</p>
+          <div class="product-price">¥{{ product.price }}</div>
+          <a href="{{ product.link }}" class="product-link" target="_blank" rel="noopener">
+            詳細を見る
+          </a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  {#- ソーシャルウィジェット -#}
+  <div class="widget social-widget">
+    <h3 class="widget-title">📢 フォローする</h3>
+    <div class="social-links">
+      <a href="#" class="social-link twitter" target="_blank" rel="noopener noreferrer">
+        <span class="social-icon">🐦</span>
+        Twitter
+      </a>
+      <a href="#" class="social-link youtube" target="_blank" rel="noopener noreferrer">
+        <span class="social-icon">📺</span>
+        YouTube
+      </a>
+    </div>
+  </div>
+
+</div>

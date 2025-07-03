@@ -1,0 +1,61 @@
+/* ナビゲーションコンポーネント */
+.main-navigation {
+  flex: 1;
+  margin: 0 var(--spacing-lg);
+}
+
+.nav-list {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-lg);
+  justify-content: center;
+}
+
+.nav-link {
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--border-radius-md);
+  font-weight: 500;
+  color: var(--color-text);
+  transition: all var(--transition-base);
+  position: relative;
+  text-decoration: none;
+}
+
+.nav-link:hover {
+  color: var(--color-primary-dark);
+  background-color: var(--color-primary-light);
+}
+
+.nav-link--active {
+  color: var(--color-primary);
+  font-weight: 600;
+  background-color: var(--color-primary-light);
+}
+
+.nav-link--active::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 20px;
+  height: 2px;
+  background-color: var(--color-primary);
+  border-radius: 1px;
+}
+
+/* モバイル対応 */
+@media (max-width: 767px) {
+  .main-navigation {
+    margin: 0 var(--spacing-sm);
+  }
+  
+  .nav-list {
+    gap: var(--spacing-sm);
+  }
+  
+  .nav-link {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    font-size: var(--font-size-sm);
+  }
+}
