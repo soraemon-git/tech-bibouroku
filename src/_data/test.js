@@ -1,7 +1,6 @@
-console.log('=== test.js が実行されました ===');
+// テストデータファイル
 
 module.exports = function() {
-  console.log('=== test.js 関数が実行されました ===');
   return {
     message: "テストデータです",
     timestamp: new Date().toISOString(),

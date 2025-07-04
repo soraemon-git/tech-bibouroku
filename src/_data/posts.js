@@ -1,30 +1,28 @@
-console.log('=== posts.js ファイルが読み込まれました ===');
-
-const { createClient } = require('contentful');
+const { isContentfulConfigured, getContentfulEntries, transformContentfulItems } = require('./contentful-client');
 
 module.exports = async function() {
-  console.log('=== posts.js 関数が実行されました ===');
-  console.log('現在時刻:', new Date().toLocaleString('ja-JP'));
-  console.log('process.env が存在:', typeof process.env);
-  console.log('CONTENTFUL_SPACE_ID値:', process.env.CONTENTFUL_SPACE_ID);
-  console.log('CONTENTFUL_ACCESS_TOKEN値:', process.env.CONTENTFUL_ACCESS_TOKEN ? process.env.CONTENTFUL_ACCESS_TOKEN.substring(0, 10) + '...' : '未設定');
+  // Contentfulの設定をチェック
+  if (!isContentfulConfigured()) {
+    console.log('Contentfulの設定が不完全です。サンプルデータを返します。');
+    return getSampleData();
+  }
 
-  // 環境変数が設定されていない、またはプレースホルダーの場合はサンプルデータを返す
-  const isPlaceholder = process.env.CONTENTFUL_SPACE_ID === 'your_space_id_here' || 
-                        process.env.CONTENTFUL_ACCESS_TOKEN === 'your_delivery_api_token_here';
-  
-  if (!process.env.CONTENTFUL_SPACE_ID || 
-      !process.env.CONTENTFUL_ACCESS_TOKEN || 
-      isPlaceholder) {
-    
-    if (isPlaceholder) {
-      console.log('=== プレースホルダー値が検出されました ===');
-      console.log('実際のContentful APIキーを .env ファイルに設定してください');
-    }
+  try {
+    const items = await getContentfulEntries();
+    console.log(`Contentfulから${items.length}件の記事を取得しました。`);
+    return transformContentfulItems(items);
+  } catch (error) {
+    console.error('=== Contentfulからの記事取得エラー ===');
+    console.error('エラー詳細:', error);
     console.log('=== サンプルデータを返します ===');
-    const sampleData = [
-      {
-        id: 'sample-1',
+    return getSampleData();
+  }
+};
+
+function getSampleData() {
+  return [
+    {
+      id: 'sample-1',
         title: 'サンプル記事: 最新スマートフォンレビュー',
         slug: 'sample-smartphone-review',
         excerpt: 'この記事では最新のスマートフォンについて詳しくレビューします。カメラ性能、バッテリー持続時間、処理速度など様々な観点から分析しています。',
@@ -112,7 +110,7 @@ RAM: 8GB LPDDR5
 *このレビューは実際の使用体験に基づいて作成されています。*`,
         category: 'スマートフォン',
         tags: ['レビュー', 'モバイル', 'ガジェット'],
-        publishDate: '2025-07-02',
+        publishDate: '2025-07-02T09:00:00+09:00',
         featuredImage: null,
         author: 'ブログ管理者',
         url: '/blog/sample-smartphone-review/'
@@ -243,7 +241,7 @@ PCを選ぶ際は、**用途を明確にする**ことが最も重要です：
 *PC選びでお困りの方は、お気軽にコメントでご相談ください。*`,
         category: 'PC',
         tags: ['ガイド', 'PC', 'ハードウェア'],
-        publishDate: '2025-07-01',
+        publishDate: '2025-07-01T15:30:00+09:00',
         featuredImage: null,
         author: 'ブログ管理者',
         url: '/blog/sample-pc-selection-guide/'
@@ -414,49 +412,10 @@ ChatGPTを効果的に活用することで、以下のメリットが得られ�
 *ChatGPT活用についてのご質問やご相談がございましたら、お気軽にコメントでお聞かせください。*`,
         category: 'AI',
         tags: ['AI', 'ChatGPT', '生産性', 'ツール'],
-        publishDate: '2025-07-03',
+        publishDate: '2025-07-03T10:15:00+09:00',
         featuredImage: null,
         author: 'ブログ管理者',
         url: '/blog/sample-chatgpt-productivity/'
       }
-    ];
-    console.log('=== サンプルデータ作成完了 ===');
-    console.log('サンプルデータ件数:', sampleData.length);
-    console.log('最初の記事タイトル:', sampleData[0].title);
-    console.log('=== posts.js 関数終了（サンプルデータ返却） ===');
-    return sampleData;
-  }
-
-  console.log('=== Contentful接続を試行 ===');
-  const client = createClient({
-    space: process.env.CONTENTFUL_SPACE_ID,
-    accessToken: process.env.CONTENTFUL_ACCESS_TOKEN
-  });
-
-  try {
-    const entries = await client.getEntries({
-      content_type: 'blogPost',
-      order: '-sys.createdAt',
-      limit: 100
-    });
-
-    return entries.items.map(item => ({
-      id: item.sys.id,
-      title: item.fields.title,
-      slug: item.fields.slug,
-      excerpt: item.fields.excerpt,
-      content: item.fields.content,
-      category: item.fields.category,
-      tags: item.fields.tags || [],
-      publishDate: item.fields.publishDate,
-      featuredImage: item.fields.featuredImage,
-      author: item.fields.author,
-      url: `/blog/${item.fields.slug}/`
-    }));
-  } catch (error) {
-    console.error('=== Contentfulからの記事取得エラー ===');
-    console.error('エラー詳細:', error);
-    console.log('=== 空の配列を返します ===');
-    return [];
-  }
-};
+  ];
+}

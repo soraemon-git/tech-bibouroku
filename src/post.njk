@@ -39,7 +39,17 @@ eleventyComputed:
     <div class="container">
       <div class="post-content">
         <div id="post-content-body">
-          {{ post.content | markdownify | safe }}
+          {% if post.content %}
+            {% if post.content.nodeType %}
+              {# Contentful Rich Text の場合 #}
+              {{ post.content | dump | safe }}
+            {% else %}
+              {# Markdown文字列の場合 #}
+              {{ post.content | markdownify | safe }}
+            {% endif %}
+          {% else %}
+            <p>コンテンツがありません。</p>
+          {% endif %}
         </div>
       </div>
     </div>

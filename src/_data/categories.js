@@ -1,5 +1,5 @@
 // カテゴリーページ自動生成用のデータファイル
-const contentful = require('contentful');
+const { isContentfulConfigured, getContentfulEntries } = require('./contentful-client');
 
 // カテゴリ名からスラッグを生成するヘルパー関数（sidebar.jsと同じ）
 function createSlug(name) {
@@ -31,33 +31,19 @@ function createSlug(name) {
 module.exports = async function() {
   console.log('=== categories.js が実行されました ===');
   
-  // 環境変数の検証
-  if (!process.env.CONTENTFUL_SPACE_ID || 
-      !process.env.CONTENTFUL_DELIVERY_TOKEN ||
-      process.env.CONTENTFUL_SPACE_ID === 'your_space_id_here' ||
-      process.env.CONTENTFUL_DELIVERY_TOKEN === 'your_delivery_token_here') {
-    
+  // Contentfulの設定をチェック
+  if (!isContentfulConfigured()) {
     console.warn('Contentfulの設定が不完全です。posts.jsのサンプルデータからカテゴリーを抽出します。');
     return getDataFromPosts();
   }
 
-  // Contentfulクライアントの初期化
-  const client = contentful.createClient({
-    space: process.env.CONTENTFUL_SPACE_ID,
-    accessToken: process.env.CONTENTFUL_DELIVERY_TOKEN,
-  });
-
   try {
     // 記事を取得してカテゴリを抽出
-    const entries = await client.getEntries({
-      content_type: 'blogPost',
-      limit: 100,
-      order: '-sys.createdAt'
-    });
+    const entries = await getContentfulEntries();
 
     // カテゴリを抽出してページ生成用データを作成
     const categorySet = new Set();
-    entries.items.forEach(post => {
+    entries.forEach(post => {
       const category = post.fields.category;
       if (category) {
         categorySet.add(category);

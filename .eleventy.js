@@ -40,7 +40,22 @@ module.exports = function(eleventyConfig) {
 
   // フィルター追加
   eleventyConfig.addFilter("dateFormat", function(date) {
-    return new Date(date).toLocaleDateString('ja-JP');
+    if (!date) return '日付不明';
+    
+    try {
+      const dateObj = new Date(date);
+      if (isNaN(dateObj.getTime())) {
+        return '無効な日付';
+      }
+      return dateObj.toLocaleDateString('ja-JP', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+    } catch (error) {
+      console.error('日付フォーマットエラー:', error);
+      return '日付エラー';
+    }
   });
 
   eleventyConfig.addFilter("slice", function(array, start, end) {

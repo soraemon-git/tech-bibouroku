@@ -1,4 +1,4 @@
-const contentful = require('contentful');
+const { isContentfulConfigured, getContentfulEntries } = require('./contentful-client');
 
 // カテゴリ名からスラッグを生成するヘルパー関数
 function createSlug(name) {
@@ -28,33 +28,19 @@ function createSlug(name) {
 }
 
 module.exports = async function() {
-  // 環境変数の検証
-  if (!process.env.CONTENTFUL_SPACE_ID || 
-      !process.env.CONTENTFUL_DELIVERY_TOKEN ||
-      process.env.CONTENTFUL_SPACE_ID === 'your_space_id_here' ||
-      process.env.CONTENTFUL_DELIVERY_TOKEN === 'your_delivery_token_here') {
-    
-    console.warn('Contentfulの設定が不完全です。posts.jsのサンプルデータからカテゴリーを抽出します。');
+  // Contentfulの設定をチェック
+  if (!isContentfulConfigured()) {
+    console.log('sidebar.js: posts.jsからカテゴリーを抽出します');
     return getDataFromPosts();
   }
 
-  // Contentfulクライアントの初期化
-  const client = contentful.createClient({
-    space: process.env.CONTENTFUL_SPACE_ID,
-    accessToken: process.env.CONTENTFUL_DELIVERY_TOKEN,
-  });
-
   try {
     // 記事を取得してカテゴリを抽出
-    const entries = await client.getEntries({
-      content_type: 'blogPost',
-      limit: 100,
-      order: '-sys.createdAt'
-    });
+    const entries = await getContentfulEntries();
 
     // カテゴリ別記事数を集計（記事から自動抽出）
     const categoryStats = new Map();
-    entries.items.forEach(post => {
+    entries.forEach(post => {
       const category = post.fields.category;
       if (category) {
         if (!categoryStats.has(category)) {
@@ -74,14 +60,14 @@ module.exports = async function() {
       {
         name: 'すべて',
         slug: 'all',
-        count: entries.items.length,
+        count: entries.length,
         url: '/blog/'
       },
       ...Array.from(categoryStats.values()).sort((a, b) => a.name.localeCompare(b.name))
     ];
 
     // 人気記事（最新5件をサンプルとして使用）
-    const popularPosts = entries.items.slice(0, 5).map(post => ({
+    const popularPosts = entries.slice(0, 5).map(post => ({
       title: post.fields.title,
       url: `/blog/${post.fields.slug}/`,
       publishDate: post.fields.publishDate,

@@ -9,7 +9,7 @@ eleventyExcludeFromCollections: true
       "id": "{{ post.id }}",
       "title": {{ post.title | dump | safe }},
       "excerpt": {{ post.excerpt | dump | safe }},
-      "content": {{ post.content | striptags | dump | safe }},
+      "content": {% if post.content %}{% if post.content.nodeType %}{{ post.title | dump | safe }}{% else %}{{ post.content | striptags | dump | safe }}{% endif %}{% else %}""{% endif %},
       "category": {{ post.category | dump | safe }},
       "tags": [
         {%- if post.tags -%}
