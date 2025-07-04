@@ -5,6 +5,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // ダークモード切替機能
     initThemeToggle();
     
+    // 固定ヘッダー機能
+    initStickyHeader();
+    
     // スムーススクロール
     initSmoothScroll();
     
@@ -23,9 +26,77 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 500);
 });
 
+// 固定ヘッダー機能
+function initStickyHeader() {
+    const stickyNav = document.getElementById('sticky-nav');
+    const header = document.querySelector('.site-header');
+    const themeToggle = document.getElementById('theme-toggle');
+    const stickyThemeToggle = document.getElementById('theme-toggle-sticky');
+    
+    if (!stickyNav || !header) return;
+    
+    let headerHeight = header.offsetHeight;
+    let lastScrollY = 0;
+    let ticking = false;
+    
+    // スクロール位置に応じて固定ヘッダーを表示/非表示
+    function updateStickyHeader() {
+        const scrollY = window.scrollY;
+        
+        if (scrollY > headerHeight) {
+            // ヘッダーが見えなくなったら固定ナビを表示
+            stickyNav.classList.add('show');
+            document.body.classList.add('sticky-nav-active');
+        } else {
+            // ヘッダーが見えるときは固定ナビを非表示
+            stickyNav.classList.remove('show');
+            document.body.classList.remove('sticky-nav-active');
+        }
+        
+        lastScrollY = scrollY;
+        ticking = false;
+    }
+    
+    // スクロールイベントの処理
+    function requestTick() {
+        if (!ticking) {
+            requestAnimationFrame(updateStickyHeader);
+            ticking = true;
+        }
+    }
+    
+    // リサイズ時にヘッダーの高さを更新
+    function updateHeaderHeight() {
+        headerHeight = header.offsetHeight;
+    }
+    
+    // 固定ナビのテーマ切替ボタンの同期
+    function syncThemeToggle() {
+        if (themeToggle && stickyThemeToggle) {
+            // 既存のイベントリスナーを削除してから新しいものを追加
+            stickyThemeToggle.removeEventListener('click', handleStickyThemeToggle);
+            stickyThemeToggle.addEventListener('click', handleStickyThemeToggle);
+        }
+    }
+    
+    function handleStickyThemeToggle() {
+        themeToggle.click(); // メインのボタンをクリック
+    }
+    
+    // イベントリスナーの設定
+    window.addEventListener('scroll', requestTick, { passive: true });
+    window.addEventListener('resize', updateHeaderHeight, { passive: true });
+    
+    // 初期化
+    updateHeaderHeight();
+    syncThemeToggle();
+}
+
 // ダークモード切替
 function initThemeToggle() {
     const themeToggle = document.getElementById('theme-toggle');
+    if (!themeToggle) return;
+    
     const themeIcon = themeToggle.querySelector('.theme-icon');
     
     // 保存されたテーマまたはシステム設定を取得
@@ -63,12 +134,12 @@ function initThemeToggle() {
     });
 }
 
-// テーマアイコン更新
+// テーマアイコン更新（全てのテーマ切替ボタンを更新）
 function updateThemeIcon(theme) {
-    const themeIcon = document.querySelector('.theme-icon');
-    if (themeIcon) {
-        themeIcon.textContent = theme === 'light' ? '🌙' : '☀️';
-    }
+    const themeIcons = document.querySelectorAll('.theme-icon');
+    themeIcons.forEach(icon => {
+        icon.textContent = theme === 'light' ? '🌙' : '☀️';
+    });
 }
 
 // スムーススクロール
@@ -79,8 +150,15 @@ function initSmoothScroll() {
             const target = document.querySelector(this.getAttribute('href'));
             
             if (target) {
+                const stickyNav = document.querySelector('.sticky-nav');
                 const headerHeight = document.querySelector('.site-header').offsetHeight;
-                const targetPosition = target.offsetTop - headerHeight - 20;
+                const stickyNavHeight = stickyNav ? stickyNav.offsetHeight : 0;
+                
+                // スクロール位置に応じてオフセットを調整
+                const isScrolledPastHeader = window.scrollY > headerHeight;
+                const offset = isScrolledPastHeader ? stickyNavHeight : headerHeight;
+                
+                const targetPosition = target.offsetTop - offset - 20;
                 
                 window.scrollTo({
                     top: targetPosition,

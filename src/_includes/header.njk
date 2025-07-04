@@ -27,13 +27,28 @@
                 </div>
             </div>
             
-            <div class="header-right">
-                {% include "navigation.njk" %}
-                
-                <button class="theme-toggle" id="theme-toggle" aria-label="ダークモード切替">
-                    <span class="theme-icon">🌙</span>
-                </button>
+            <div class="header-bottom">
+                <div class="header-right">
+                    {% include "navigation.njk" %}
+                    
+                    <button class="theme-toggle" id="theme-toggle" aria-label="ダークモード切替">
+                        <span class="theme-icon">🌙</span>
+                    </button>
+                </div>
             </div>
         </div>
     </div>
 </header>
+
+<!-- 固定ナビゲーション -->
+<nav class="sticky-nav" id="sticky-nav">
+    <div class="container">
+        <div class="sticky-nav-content">
+            {% include "navigation.njk" %}
+            
+            <button class="theme-toggle" id="theme-toggle-sticky" aria-label="ダークモード切替">
+                <span class="theme-icon">🌙</span>
+            </button>
+        </div>
+    </div>
+</nav>
