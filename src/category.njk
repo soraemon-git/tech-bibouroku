@@ -26,27 +26,27 @@ showRightSidebar: false
 
     <div class="blog-posts">
       {% if categoryPageData.posts | length > 0 %}
-        <div class="posts-list">
+        <div class="posts-grid">
           {% for post in categoryPageData.posts %}
-            <article class="post-item">
-              <h2 class="post-item__title">
-                <a href="{{ post.url }}">{{ post.title }}</a>
-              </h2>
-              
-              <p class="post-item__excerpt">{{ post.excerpt }}</p>
-              
-              <div class="post-item__meta">
-                <span class="post-item__category">{{ post.category }}</span>
-                <time class="post-item__date" datetime="{{ post.publishDate }}">
-                  {{ post.publishDate | dateFormat }}
-                </time>
-              </div>
-              
-              <a href="{{ post.url }}" class="read-more">
-                続きを読む
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M5 12h14M12 5l7 7-7 7"/>
-                </svg>
+            <article class="post-card" data-category="{{ post.category }}">
+              <a href="{{ post.url }}" class="post-card__link">
+                <div class="post-card__date-row">
+                  <time class="post-card__date" datetime="{{ post.publishDate }}">
+                    {{ post.publishDate | dateFormat }}
+                  </time>
+                </div>
+                <div class="post-card__content-row">
+                  <div class="post-card__category-icon">
+                    {% if post.categoryImage %}
+                      <img src="{{ post.categoryImage }}" alt="{{ post.category }}" class="category-image">
+                    {% else %}
+                      <span class="category-badge">{{ post.category | slice(0, 2) }}</span>
+                    {% endif %}
+                  </div>
+                  <h3 class="post-card__title">
+                    {{ post.title }}
+                  </h3>
+                </div>
               </a>
             </article>
           {% endfor %}

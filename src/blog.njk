@@ -26,26 +26,28 @@ showRightSidebar: false
         
         <div class="blog-results-section">
             {% if paginatedPosts and paginatedPosts.length > 0 %}
-                <div class="posts-list">
+                <div class="posts-grid">
                     {% for post in paginatedPosts %}
-                        <article class="post-item">
-                            <div class="post-item__meta">
-                                <span class="post-item__category">{{ post.category }}</span>
-                                <time class="post-item__date" datetime="{{ post.publishDate }}">
-                                    {{ post.publishDate | dateFormat }}
-                                </time>
-                            </div>
-                            <h2 class="post-item__title">
-                                <a href="{{ post.url }}">{{ post.title }}</a>
-                            </h2>
-                            <p class="post-item__excerpt">{{ post.excerpt }}</p>
-                            {% if post.tags %}
-                            <div class="post-item__tags">
-                                {% for tag in post.tags %}
-                                    <span class="tag">{{ tag }}</span>
-                                {% endfor %}
-                            </div>
-                            {% endif %}
+                        <article class="post-card" data-category="{{ post.category }}">
+                            <a href="{{ post.url }}" class="post-card__link">
+                                <div class="post-card__date-row">
+                                    <time class="post-card__date" datetime="{{ post.publishDate }}">
+                                        {{ post.publishDate | dateFormat }}
+                                    </time>
+                                </div>
+                                <div class="post-card__content-row">
+                                    <div class="post-card__category-icon">
+                                        {% if post.categoryImage %}
+                                            <img src="{{ post.categoryImage }}" alt="{{ post.category }}" class="category-image">
+                                        {% else %}
+                                            <span class="category-badge">{{ post.category | slice(0, 2) }}</span>
+                                        {% endif %}
+                                    </div>
+                                    <h3 class="post-card__title">
+                                        {{ post.title }}
+                                    </h3>
+                                </div>
+                            </a>
                         </article>
                     {% endfor %}
                 </div>

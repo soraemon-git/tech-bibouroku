@@ -319,8 +319,8 @@ class BlogSearch {
         </h2>
         ${totalPages > 1 ? `<p class="pagination-info">ページ ${this.currentPage} / ${totalPages}</p>` : ''}
       </div>
-      <div class="search-results-list">
-        ${paginatedResults.map(post => this.renderPostItem(post)).join('')}
+      <div class="posts-grid">
+        ${paginatedResults.map(post => this.renderPostCard(post)).join('')}
       </div>
       ${totalPages > 1 ? this.renderPagination(this.currentPage, totalPages) : ''}
     `;
@@ -330,16 +330,25 @@ class BlogSearch {
     this.bindPaginationEvents();
   }
 
-  renderPostItem(post) {
+  renderPostCard(post) {
+    const categoryInitial = post.category ? post.category.slice(0, 2) : 'カ';
     return `
-      <article class="search-result-item">
-        <h3 class="search-result-title">
-          <a href="${post.url}">${post.title}</a>
-        </h3>
-        <p class="search-result-excerpt">${post.excerpt || ''}</p>
-        <div class="search-result-meta">
-          <time datetime="${post.date}">${this.formatDate(post.date)}</time>
-        </div>
+      <article class="post-card" data-category="${post.category || ''}">
+        <a href="${post.url}" class="post-card__link">
+          <div class="post-card__date-row">
+            <time class="post-card__date" datetime="${post.date}">
+              ${this.formatDate(post.date)}
+            </time>
+          </div>
+          <div class="post-card__content-row">
+            <div class="post-card__category-icon">
+              <span class="category-badge">${categoryInitial}</span>
+            </div>
+            <h3 class="post-card__title">
+              ${post.title}
+            </h3>
+          </div>
+        </a>
       </article>
     `;
   }
@@ -524,7 +533,7 @@ class BlogSearch {
         </h2>
         ${totalPages > 1 ? `<p class="pagination-info">ページ ${this.currentPage} / ${totalPages}</p>` : ''}
       </div>
-      <div class="search-results-list">
+      <div class="posts-grid">
         ${paginatedResults.map(post => this.createPostCard(post, query)).join('')}
       </div>
       ${totalPages > 1 ? this.renderPagination(this.currentPage, totalPages) : ''}
@@ -537,18 +546,25 @@ class BlogSearch {
 
   createPostCard(post, query = '') {
     const highlightedTitle = this.highlightSearchTerms(post.title, query);
-    const highlightedExcerpt = this.highlightSearchTerms(post.excerpt, query);
+    const categoryInitial = post.category ? post.category.slice(0, 2) : 'カ';
     
     return `
-      <article class="search-result-item">
-        <h3 class="search-result-title">
-          <a href="${post.url}">${highlightedTitle}</a>
-        </h3>
-        <p class="search-result-excerpt">${highlightedExcerpt}</p>
-        <div class="search-result-meta">
-          <time datetime="${post.date}">${this.formatDate(post.date)}</time>
-          ${post.category ? `<span class="search-result-category">${post.category}</span>` : ''}
-        </div>
+      <article class="post-card" data-category="${post.category || ''}">
+        <a href="${post.url}" class="post-card__link">
+          <div class="post-card__date-row">
+            <time class="post-card__date" datetime="${post.date}">
+              ${this.formatDate(post.date)}
+            </time>
+          </div>
+          <div class="post-card__content-row">
+            <div class="post-card__category-icon">
+              <span class="category-badge">${categoryInitial}</span>
+            </div>
+            <h3 class="post-card__title">
+              ${highlightedTitle}
+            </h3>
+          </div>
+        </a>
       </article>
     `;
   }
