@@ -72,9 +72,29 @@ class BlogSearch {
       const categoryElement = document.getElementById('category-data');
       if (categoryElement) {
         this.categoryData = JSON.parse(categoryElement.textContent);
+        console.log('カテゴリデータ読み込み成功:', this.categoryData);
+      } else {
+        console.warn('category-data要素が見つかりません。デフォルトデータを使用します。');
+        // デフォルトのカテゴリデータを設定
+        this.categoryData = {
+          categories: [
+            { name: 'すべて', slug: '', count: 0 },
+            { name: 'AI', slug: 'ai', count: 0 },
+            { name: 'PC', slug: 'pc', count: 0 },
+            { name: 'スマートフォン', slug: 'smartphone', count: 0 },
+            { name: 'ガジェット', slug: 'gadget', count: 0 },
+            { name: 'ソフトウェア', slug: 'software', count: 0 }
+          ]
+        };
       }
     } catch (error) {
       console.warn('カテゴリデータの読み込みに失敗しました:', error);
+      // エラー時もデフォルトデータを設定
+      this.categoryData = {
+        categories: [
+          { name: 'すべて', slug: '', count: 0 }
+        ]
+      };
     }
   }
 
@@ -233,7 +253,12 @@ class BlogSearch {
     this.currentPage = 1; // カテゴリ変更時にページをリセット
     
     if (!this.categoryData) {
-      console.warn('カテゴリデータが読み込まれていません');
+      console.warn('カテゴリデータが読み込まれていません。再読み込みを試行します。');
+      this.loadCategoryData().then(() => {
+        if (this.categoryData) {
+          this.filterByCategory(category);
+        }
+      });
       return;
     }
 

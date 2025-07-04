@@ -4,10 +4,12 @@
 .posts-grid {
   display: grid;
   grid-template-columns: 1fr; /* デフォルトは1カラム */
-  gap: var(--spacing-lg);
-  margin-bottom: var(--spacing-2xl);
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-xl);
   /* 強制的に2カラム以下にする */
   max-width: 100%;
+  /* グリッドアイテムの高さを自動調整 */
+  grid-auto-rows: min-content;
 }
 
 /* レスポンシブグリッド */
@@ -22,73 +24,148 @@
   background-color: var(--color-background);
   border: 1px solid var(--color-border);
   border-radius: var(--border-radius-lg);
-  padding: var(--spacing-lg);
-  transition: all var(--transition-base);
-  height: 100%;
-  min-height: 300px;
-  max-height: 400px;
+  transition: box-shadow var(--transition-base), border-color var(--transition-base);
+  height: auto;
+  min-height: 120px;
+  max-height: 150px;
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  opacity: 1;
+  transform: translateY(0);
+  position: relative;
+}
+
+.post-card__link {
+  display: flex;
+  flex-direction: column;
+  padding: var(--spacing-sm);
+  color: inherit;
+  text-decoration: none;
+  height: 100%;
+  width: 100%;
+  pointer-events: auto;
+  cursor: pointer;
+  position: relative;
+  z-index: 1;
+}
+
+.post-card__link:hover {
+  color: inherit;
+}
+
+/* 日付行 */
+.post-card__date-row {
+  margin-bottom: var(--spacing-xs);
+}
+
+.post-card__date {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-light);
+  font-weight: 500;
+}
+
+/* コンテンツ行 */
+.post-card__content-row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-sm);
+  flex: 1;
+}
+
+/* カテゴリアイコン */
+.post-card__category-icon {
+  flex-shrink: 0;
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--border-radius-md);
+  overflow: hidden;
+}
+
+.category-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: var(--border-radius-md);
+}
+
+.category-badge {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+  color: white;
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--border-radius-md);
+  letter-spacing: 0.5px;
+}
+
+/* カテゴリ別の色分け */
+.post-card[data-category="PC"] .category-badge {
+  background: linear-gradient(135deg, #3b82f6, #1e40af);
+}
+
+.post-card[data-category="スマートフォン"] .category-badge {
+  background: linear-gradient(135deg, #10b981, #047857);
+}
+
+.post-card[data-category="AI"] .category-badge {
+  background: linear-gradient(135deg, #8b5cf6, #5b21b6);
+}
+
+.post-card[data-category="ガジェット"] .category-badge {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+
+.post-card[data-category="ソフトウェア"] .category-badge {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
 }
 
 .post-card:hover {
-  transform: translateY(-2px);
   box-shadow: var(--shadow-lg);
   border-color: var(--color-primary-light);
 }
 
 .post-card__title {
-  margin-bottom: var(--spacing-sm);
-  font-size: var(--font-size-xl);
+  margin: 0;
+  font-size: var(--font-size-lg);
+  font-weight: 700;
   line-height: var(--line-height-tight);
-  /* タイトルの行数制限 */
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.post-card__title a {
   color: var(--color-text);
-  text-decoration: none;
-}
-
-.post-card__title a:hover {
-  color: var(--color-primary);
-}
-
-.post-card__excerpt {
-  color: var(--color-text-light);
-  margin-bottom: var(--spacing-md);
-  flex: 1;
-  line-height: var(--line-height-relaxed);
-  /* 抜粋文の行数制限 */
+  /* タイトルの行数制限 */
   display: -webkit-box;
   -webkit-line-clamp: 3;
   line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
-  min-height: 4.5em; /* 約3行分の高さを確保 */
+  flex: 1;
 }
 
+.post-card__link:hover .post-card__title {
+  color: var(--color-primary);
+}
+
+.post-card__excerpt {
+  /* 抜粋文を非表示にする */
+  display: none;
+}
+
+/* 旧メタ情報スタイル（非表示） */
 .post-card__meta {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: var(--font-size-sm);
-  margin-top: auto;
+  display: none;
 }
 
 .post-card__category {
-  background-color: var(--color-primary-light);
-  color: var(--color-primary-dark);
-  padding: var(--spacing-xs) var(--spacing-sm);
-  border-radius: var(--border-radius-sm);
-  font-weight: 500;
+  /* 旧カテゴリスタイル（非表示） */
+  display: none;
 }
 
 .post-card__date {
@@ -185,23 +262,37 @@
 /* モバイル対応 */
 @media (max-width: 1799px) {
   .post-card {
-    padding: var(--spacing-md);
-    min-height: 280px;
-    max-height: 350px;
+    min-height: 120px;
+    max-height: 150px;
+  }
+  
+  .post-card__link {
+    padding: var(--spacing-xs);
+  }
+  
+  .post-card__date {
+    font-size: var(--font-size-xs);
+  }
+  
+  .post-card__content-row {
+    gap: var(--spacing-sm);
+  }
+  
+  .post-card__category-icon {
+    width: 64px;
+    height: 64px;
+  }
+  
+  .category-badge {
+    font-size: var(--font-size-xs);
   }
   
   .post-card__title {
     font-size: var(--font-size-lg);
-  }
-  
-  .post-card__excerpt {
-    min-height: 4em; /* モバイルでは少し縮める */
-  }
-  
-  .post-card__meta {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: var(--spacing-xs);
+    font-weight: 700;
+    line-height: 1.4;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
   }
   
   .post-item__title {

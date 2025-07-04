@@ -169,30 +169,26 @@ function initSmoothScroll() {
     });
 }
 
-// 記事カードアニメーション
+// 記事カードアニメーション（無効化）
 function initPostCardAnimations() {
+    // アニメーションを無効化し、すべての記事カードを即座に表示
     const postCards = document.querySelectorAll('.post-card');
     
-    // Intersection Observer for fade-in animation
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.style.opacity = '1';
-                entry.target.style.transform = 'translateY(0)';
-            }
-        });
-    }, {
-        threshold: 0.1,
-        rootMargin: '0px 0px -50px 0px'
-    });
-    
-    postCards.forEach((card, index) => {
-        // 初期状態設定
-        card.style.opacity = '0';
-        card.style.transform = 'translateY(20px)';
-        card.style.transition = `opacity 0.6s ease ${index * 0.1}s, transform 0.6s ease ${index * 0.1}s`;
+    postCards.forEach(card => {
+        // 即座に表示状態にする
+        card.style.opacity = '1';
+        card.style.transform = 'translateY(0)';
+        card.style.transition = 'none';
         
-        observer.observe(card);
+        // 記事カード全体にクリックイベントを追加
+        const link = card.querySelector('.post-card__link');
+        if (link) {
+            card.addEventListener('click', function(e) {
+                e.preventDefault();
+                console.log('Card clicked, navigating to:', link.href);
+                window.location.href = link.href;
+            });
+        }
     });
 }
 

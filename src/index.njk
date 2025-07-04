@@ -11,17 +11,26 @@ showRightSidebar: true
         <h2>最新記事</h2>
         <div class="posts-grid">
             {% for post in posts | slice(0, 10) %}
-                <article class="post-card">
-                    <h3 class="post-card__title">
-                        <a href="{{ post.url }}">{{ post.title }}</a>
-                    </h3>
-                    <p class="post-card__excerpt">{{ post.excerpt }}</p>
-                    <div class="post-card__meta">
-                        <span class="post-card__category">{{ post.category }}</span>
-                        <time class="post-card__date" datetime="{{ post.publishDate }}">
-                            {{ post.publishDate | dateFormat }}
-                        </time>
-                    </div>
+                <article class="post-card" data-category="{{ post.category }}">
+                    <a href="{{ post.url }}" class="post-card__link">
+                        <div class="post-card__date-row">
+                            <time class="post-card__date" datetime="{{ post.publishDate }}">
+                                {{ post.publishDate | dateFormat }}
+                            </time>
+                        </div>
+                        <div class="post-card__content-row">
+                            <div class="post-card__category-icon">
+                                {% if post.categoryImage %}
+                                    <img src="{{ post.categoryImage }}" alt="{{ post.category }}" class="category-image">
+                                {% else %}
+                                    <span class="category-badge">{{ post.category | slice(0, 2) }}</span>
+                                {% endif %}
+                            </div>
+                            <h3 class="post-card__title">
+                                {{ post.title }}
+                            </h3>
+                        </div>
+                    </a>
                 </article>
             {% endfor %}
         </div>

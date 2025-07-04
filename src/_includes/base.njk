@@ -56,6 +56,13 @@
     
     {% include "footer.njk" %}
     
+    <!-- カテゴリデータ -->
+    {% if categories %}
+    <script id="category-data" type="application/json">
+        {{ categories | dump | safe }}
+    </script>
+    {% endif %}
+    
     <!-- JavaScript -->
     <script src="/js/main.js"></script>
     <script src="/js/search.js"></script>
