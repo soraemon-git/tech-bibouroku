@@ -140,9 +140,10 @@ node scripts/create-post.js
 
 ## 📚 ドキュメント
 
-- [プロジェクト概要](./PROJECT_OVERVIEW.md)
+- [プロジェクト概要](./doc/PROJECT_OVERVIEW.md)
 - [開発環境構築](./doc/DEVELOPMENT_SETUP.md)
-- [プロジェクト構造](./PROJECT_STRUCTURE.md)
+- [プロジェクト構造](./doc/PROJECT_STRUCTURE.md)
+- [カテゴリー自動管理システム運用ガイド](./doc/CATEGORY_AUTOMATION_GUIDE.md)
 
 ## 🤝 貢献
 
