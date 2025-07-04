@@ -2,12 +2,10 @@
  * カテゴリページのページネーション用データ生成
  */
 
-const fs = require('fs');
-const path = require('path');
-
 module.exports = async function() {
-  // postsデータを取得
-  const posts = JSON.parse(fs.readFileSync(path.join(__dirname, '../../debug/test-posts.json'), 'utf8'));
+  // postsデータを取得（Contentful対応）
+  const postsFunction = require('./posts.js');
+  const posts = await postsFunction();
   
   // カテゴリデータを取得（非同期）
   const categoriesFunction = require('./categories.js');
@@ -16,8 +14,8 @@ module.exports = async function() {
   // 配列でない場合は配列に変換
   const categoryArray = Array.isArray(categories) ? categories : [];
   
-  // 1ページあたりの記事数
-  const POSTS_PER_PAGE = 15;
+  // 1ページあたりの記事数（site.jsonの設定と同期）
+  const POSTS_PER_PAGE = 20;
   
   const categoryPages = [];
   
