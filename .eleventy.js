@@ -110,26 +110,6 @@ module.exports = function(eleventyConfig) {
   eleventyConfig.addFilter("paginate", paginate);
   eleventyConfig.addFilter("paginateCategory", paginateCategory);
 
-  // コレクション追加：カテゴリー別記事
-  eleventyConfig.addCollection("categoryPages", function(collectionApi) {
-    const posts = collectionApi.getAll().filter(item => 
-      item.data.category && item.inputPath.includes('.md')
-    );
-    
-    const categories = new Set();
-    posts.forEach(post => {
-      if (post.data.category) {
-        categories.add(post.data.category);
-      }
-    });
-    
-    return Array.from(categories).map(category => ({
-      category: category,
-      slug: category.toLowerCase().replace(/[^a-z0-9]/g, ''),
-      count: posts.filter(post => post.data.category === category).length
-    }));
-  });
-
   // ショートコード追加
   eleventyConfig.addShortcode("year", () => `${new Date().getFullYear()}`);
 

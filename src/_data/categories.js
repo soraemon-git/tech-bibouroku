@@ -48,18 +48,14 @@ module.exports = async function() {
       }
     });
 
-    // カテゴリーページ生成用のデータ配列を作成
+    // カテゴリー情報配列を作成（ページ生成はしない）
     const categories = Array.from(categorySet).map(categoryName => ({
       name: categoryName,
       slug: createSlug(categoryName),
-      url: `/blog/category/${createSlug(categoryName)}/`,
-      permalink: `/blog/category/${createSlug(categoryName)}/`,
-      // カテゴリページのメタデータ
-      layout: 'category.njk',
+      url: `/category/${createSlug(categoryName)}/`,
+      // 基本メタデータ（ページ生成には使用しない）
       title: `${categoryName}の記事`,
-      description: `${categoryName}に関する記事一覧`,
-      showLeftSidebar: false,
-      showRightSidebar: false
+      description: `${categoryName}に関する記事一覧`
     }));
 
     return categories;
@@ -91,18 +87,14 @@ async function getDataFromPosts() {
     }
   });
   
-  // カテゴリーページ生成用のデータ配列を作成
+  // カテゴリー情報配列を作成（ページ生成はしない）
   const categories = Array.from(categorySet).map(categoryName => ({
     name: categoryName,
     slug: createSlug(categoryName),
-    url: `/blog/category/${createSlug(categoryName)}/`,
-    permalink: `/blog/category/${createSlug(categoryName)}/`,
-    // カテゴリページのメタデータ
-    layout: 'category.njk',
+    url: `/category/${createSlug(categoryName)}/`,
+    // 基本メタデータ（ページ生成には使用しない）
     title: `${categoryName}の記事`,
-    description: `${categoryName}に関する記事一覧`,
-    showLeftSidebar: false,
-    showRightSidebar: false
+    description: `${categoryName}に関する記事一覧`
   }));
 
   return categories;
@@ -119,12 +111,8 @@ function getFallbackCategories() {
   return fallbackCategories.map(categoryName => ({
     name: categoryName,
     slug: createSlug(categoryName),
-    url: `/blog/category/${createSlug(categoryName)}/`,
-    permalink: `/blog/category/${createSlug(categoryName)}/`,
-    layout: 'category.njk',
+    url: `/category/${createSlug(categoryName)}/`,
     title: `${categoryName}の記事`,
-    description: `${categoryName}に関する記事一覧`,
-    showLeftSidebar: false,
-    showRightSidebar: false
+    description: `${categoryName}に関する記事一覧`
   }));
 }

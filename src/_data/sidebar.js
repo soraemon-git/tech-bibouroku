@@ -48,7 +48,7 @@ module.exports = async function() {
             name: category,
             slug: createSlug(category),
             count: 0,
-            url: `/blog/category/${createSlug(category)}/`
+            url: `/category/${createSlug(category)}/`
           });
         }
         categoryStats.get(category).count++;
@@ -103,15 +103,14 @@ async function getDataFromPosts() {
   const categoryStats = new Map();
   posts.forEach(post => {
     const category = post.category;
-    if (category) {
-      if (!categoryStats.has(category)) {
-        categoryStats.set(category, {
-          name: category,
-          slug: createSlug(category),
-          count: 0,
-          url: `/blog/category/${createSlug(category)}/`
-        });
-      }
+    if (category) {        if (!categoryStats.has(category)) {
+          categoryStats.set(category, {
+            name: category,
+            slug: createSlug(category),
+            count: 0,
+            url: `/category/${createSlug(category)}/`
+          });
+        }
       categoryStats.get(category).count++;
     }
   });
@@ -146,10 +145,10 @@ function getFallbackData() {
   return {
     categories: [
       { name: 'すべて', slug: 'all', count: 2, url: '/blog/' },
-      { name: 'PC', slug: 'pc', count: 1, url: '/blog/category/pc/' },
-      { name: 'スマートフォン', slug: 'smartphone', count: 1, url: '/blog/category/smartphone/' },
-      { name: 'ガジェット', slug: 'gadget', count: 0, url: '/blog/category/gadget/' },
-      { name: 'ソフトウェア', slug: 'software', count: 0, url: '/blog/category/software/' }
+      { name: 'PC', slug: 'pc', count: 1, url: '/category/pc/' },
+      { name: 'スマートフォン', slug: 'smartphone', count: 1, url: '/category/smartphone/' },
+      { name: 'ガジェット', slug: 'gadget', count: 0, url: '/category/gadget/' },
+      { name: 'ソフトウェア', slug: 'software', count: 0, url: '/category/software/' }
     ],
     popularPosts: [
       {

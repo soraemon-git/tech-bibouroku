@@ -4,7 +4,7 @@
         <li class="nav-item">
             {% set isActive = false %}
             {% if item.url == '/blog/' %}
-                {% set isActive = page.url.startsWith('/blog/') %}
+                {% set isActive = page.url.startsWith('/blog/') or page.url.startsWith('/category/') %}
             {% else %}
                 {% set isActive = page.url == item.url %}
             {% endif %}
