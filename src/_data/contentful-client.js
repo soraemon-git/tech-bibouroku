@@ -49,6 +49,7 @@ async function getContentfulEntries(options = {}) {
   
   const defaultOptions = {
     content_type: 'blogPost',
+    locale: 'ja',
     order: '-sys.createdAt',
     limit: 100
   };
@@ -75,7 +76,7 @@ function transformContentfulItems(items) {
     title: item.fields.title,
     slug: item.fields.slug,
     excerpt: item.fields.excerpt,
-    content: item.fields.content,
+    content: item.fields.contentMarkdown,
     category: item.fields.category,
     tags: item.fields.tags || [],
     publishDate: item.fields.publishedAt || item.fields.publishDate,

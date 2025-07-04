@@ -227,11 +227,12 @@ async function createContentfulPost(postData) {
         title: { 'ja': postData.title },
         slug: { 'ja': postData.slug },
         excerpt: { 'ja': postData.excerpt },
-        content: { 'ja': postData.content },
+        contentMarkdown: { 'ja': postData.content },
         category: { 'ja': postData.category },
         tags: { 'ja': postData.tags },
-        publishDate: { 'ja': postData.publishDate },
-        author: { 'ja': postData.author }
+        publishedAt: { 'ja': postData.publishedAt },
+        author: { 'ja': postData.author },
+        seoDescription: { 'ja': postData.seoDescription }
       }
     });
     
@@ -275,8 +276,9 @@ slug: "${postData.slug}"
 category: "${postData.category}"
 tags: [${postData.tags.map(tag => `"${tag}"`).join(', ')}]
 author: "${postData.author}"
-publishDate: "${postData.publishDate}"
+publishedAt: "${postData.publishedAt}"
 excerpt: "${postData.excerpt}"
+seoDescription: "${postData.seoDescription}"
 ---
 
 `;
@@ -321,6 +323,7 @@ async function createInteractivePost() {
     const excerpt = await ask('📄 記事の抜粋（150文字程度）');
     const tagsInput = await ask('🏷️ タグ（カンマ区切り）', template?.defaultTags?.join(', ') || '');
     const author = await ask('👤 著者名', 'ブログ管理者');
+    const seoDescription = await ask('🔍 SEO説明（省略可）', excerpt.substring(0, 160));
     
     // テンプレート内容を取得
     let content;
@@ -340,8 +343,9 @@ async function createInteractivePost() {
       category,
       excerpt,
       tags: tagsInput.split(',').map(tag => tag.trim()).filter(tag => tag),
-      publishDate: new Date().toISOString(),
+      publishedAt: new Date().toISOString(),
       author,
+      seoDescription: seoDescription || excerpt.substring(0, 160),
       content
     };
     
@@ -352,7 +356,8 @@ async function createInteractivePost() {
     console.log(`📂 カテゴリ: ${postData.category}`);
     console.log(`🏷️ タグ: ${postData.tags.join(', ')}`);
     console.log(`👤 著者: ${postData.author}`);
-    console.log(`📝 テンプレート: ${template ? template.name : 'カスタム（なし）'}`);
+    console.log(`� SEO説明: ${postData.seoDescription}`);
+    console.log(`�📝 テンプレート: ${template ? template.name : 'カスタム（なし）'}`);
     
     const shouldCreate = await confirm('\n✅ この内容で作成しますか？');
     

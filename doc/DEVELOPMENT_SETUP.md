@@ -382,6 +382,81 @@ curl "https://cdn.contentful.com/spaces/$CONTENTFUL_SPACE_ID?access_token=$CONTE
 
 ---
 
+## 7. Contentful コンテンツモデル設定
+
+### 7.1 blogPost Content Type の作成
+
+プロジェクトで使用するContentfulのコンテンツモデル（Content Type）の設定について説明します。
+
+#### 必要なContent Type
+
+**Content Type名**: `blogPost`  
+**API Identifier**: `blogPost`
+
+#### フィールド構成
+
+以下のフィールドを順番に追加してください：
+
+| フィールド名 | Type | Field ID | 設定 | 説明 |
+|-------------|------|----------|------|------|
+| タイトル | Text | `title` | Required, Short text | 記事のタイトル |
+| スラッグ | Text | `slug` | Required, Short text | URL用のスラッグ |
+| 概要 | Text | `excerpt` | Optional, Long text | 記事の概要・抜粋 |
+| 本文 | Long text | `contentMarkdown` | Required | 記事の本文 |
+| カテゴリー | Text | `category` | Required, Short text | 記事のカテゴリ |
+| タグ | Text | `tags` | Optional, Short text, List | 記事のタグ（複数設定可能） |
+| 公開日 | Date & time | `publishedAt` | Required | 記事の公開日時 |
+| 更新日 | Date & time | `updatedAt` | Optional | 記事の更新日時 |
+| 著者 | Text | `author` | Optional, Short text | 記事の著者名 |
+| SEO説明 | Text | `seoDescription` | Optional, Long text | SEO用のメタ説明 |
+| アイキャッチ画像 | Media | `featuredImage` | Optional, One file | 記事のアイキャッチ画像 |
+
+#### 7.2 フィールド設定の詳細
+
+##### 特別な設定が必要なフィールド
+
+1. **タグ（tags）**
+   - Type: `Short text`
+   - **List** にチェックを入れる（複数のタグを設定可能にするため）
+
+2. **本文（content）**
+   - Type: `Rich text` を選択（Short textやLong textではない）
+
+3. **公開日・更新日**
+   - Type: `Date & time` を選択
+   - Timezone handling: 適切なタイムゾーン設定
+
+4. **アイキャッチ画像（featuredImage）**
+   - Type: `Media`
+   - **One file** を選択（Multiple filesではない）
+
+#### 7.3 コンテンツモデルの確認
+
+設定完了後、以下の点を確認してください：
+
+- Content Type の API Identifier が `blogPost` になっている
+- 必須フィールド（Required）が適切に設定されている
+- リストフィールド（tags）の設定が正しい
+- Rich text フィールド（content）が正しく設定されている
+
+#### 7.4 サンプル記事の作成
+
+Content Type作成後、動作確認のためにサンプル記事を2-3個作成してください：
+
+```markdown
+タイトル: ChatGPTの効果的な使い方
+スラッグ: chatgpt-effective-usage
+概要: ChatGPTを仕事や学習に活用するための実践的なガイド
+カテゴリー: AI
+タグ: ChatGPT, AI, 効率化
+公開日: 2024-01-15T10:00:00+09:00
+著者: Tech Writer
+```
+
+**重要**: 作成した記事は必ず **Publish** してください。Draft状態では取得できません。
+
+---
+
 ## 8. 記事作成の簡易化
 
 ### 対話型記事作成ツール

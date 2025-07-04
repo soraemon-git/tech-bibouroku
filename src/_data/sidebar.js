@@ -176,19 +176,5 @@ function getFallbackData() {
 
 function getAffiliateProducts() {
   return [
-    {
-      title: 'おすすめノートPC',
-      description: '高性能で持ち運びやすい最新モデル',
-      price: '¥89,800',
-      link: '#',
-      image: '/images/og-image.png'
-    },
-    {
-      title: '最新スマートフォン',
-      description: 'カメラ性能抜群の人気機種',
-      price: '¥79,800',
-      link: '#',
-      image: '/images/og-image.png'
-    }
   ];
 }

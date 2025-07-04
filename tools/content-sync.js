@@ -30,6 +30,7 @@ async function syncContent() {
         // ブログ記事の取得
         const entries = await client.getEntries({
             content_type: 'blogPost',
+            locale: 'ja',
             limit: 10
         });
         
