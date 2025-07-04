@@ -377,19 +377,47 @@ async function createInteractivePost() {
 // 使用方法を表示する関数
 function showUsage() {
   console.log(`
-🚀 テクノロジーブログ記事作成ツール
+🚀 テクノロジーブログ記事作成ツール v2.2
 
 使用方法:
-  node scripts/create-post.js              # 対話型記事作成
-  npm run create-post                      # 同上（npm script版）
-  npm run new-post                         # 同上（短縮版）
+  node scripts/create-post.js                    # 対話型記事作成
+  node scripts/create-post.js --json <file>      # JSONファイルから記事作成
+  node scripts/create-post.js --template <type>  # JSONテンプレート作成
+  npm run create-post                            # 対話型記事作成（npm script版）
+  npm run new-post                               # 同上（短縮版）
+
+オプション:
+  --json <file>        JSONファイルから記事を作成
+  --template <type>    JSONテンプレートを作成（basic/single/multiple）
+  --help, -h          このヘルプを表示
 
 機能:
   ✨ 5種類のテンプレート（製品レビュー、ニュース、ガイド、比較、カスタム）
   📝 詳細なテンプレートファイル使用
   🔗 Contentful自動投稿
   💾 ローカルドラフト保存（バックアップ）
+  📂 JSONファイルからの一括作成 (NEW!)
+  🔧 変数置換機能 (NEW!)
   ⚠️  改善されたエラーハンドリング
+
+JSONファイル例:
+  # 単一記事
+  {
+    "title": "記事タイトル",
+    "category": "テクノロジー",
+    "template": "product-review",
+    "excerpt": "記事の概要",
+    "tags": ["タグ1", "タグ2"],
+    "variables": {
+      "productName": "製品名"
+    }
+  }
+
+  # 複数記事
+  [
+    { "title": "記事1", "category": "レビュー" },
+    { "title": "記事2", "category": "ニュース" }
+  ]
 
 必要な設定:
   📋 .env ファイルに以下の環境変数を設定:
@@ -402,6 +430,7 @@ function showUsage() {
     - news-article.md      (ニュース記事用)
     - howto-guide.md       (ハウツー・ガイド用)
     - comparison.md        (比較記事用)
+    - post-template-*.json (JSONテンプレート)
 
 ローカルドラフト:
   📁 drafts/ ディレクトリに自動保存
@@ -412,7 +441,57 @@ function showUsage() {
 `);
 }
 
-// ヘルプオプション
+// コマンドライン引数の処理
+async function main() {
+  const args = process.argv.slice(2);
+  
+  try {
+    // ヘルプオプション
+    if (args.includes('--help') || args.includes('-h')) {
+      showUsage();
+      return;
+    }
+    
+    // JSONファイルからの作成
+    if (args.includes('--json')) {
+      const jsonIndex = args.indexOf('--json');
+      const jsonFile = args[jsonIndex + 1];
+      
+      if (!jsonFile) {
+        console.error('❌ JSONファイルのパスを指定してください');
+        console.log('例: node scripts/create-post.js --json templates/posts.json');
+        return;
+      }
+      
+      const jsonPath = path.resolve(jsonFile);
+      await createPostFromJSON(jsonPath);
+      return;
+    }
+    
+    // JSONテンプレートの作成
+    if (args.includes('--template')) {
+      const templateIndex = args.indexOf('--template');
+      const templateType = args[templateIndex + 1] || 'basic';
+      
+      if (!['basic', 'single', 'multiple'].includes(templateType)) {
+        console.error('❌ 有効なテンプレートタイプを指定してください: basic, single, multiple');
+        return;
+      }
+      
+      await createJSONTemplate(templateType);
+      return;
+    }
+    
+    // デフォルトは対話型作成
+    await createInteractivePost();
+    
+  } catch (error) {
+    console.error('❌ エラーが発生しました:', error.message);
+    process.exit(1);
+  }
+}
+
+// ヘルプオプション（後方互換性のため保持）
 if (process.argv.includes('--help') || process.argv.includes('-h')) {
   showUsage();
   process.exit(0);
@@ -420,11 +499,216 @@ if (process.argv.includes('--help') || process.argv.includes('-h')) {
 
 // メイン実行
 if (require.main === module) {
-  createInteractivePost().catch(console.error);
+  main().catch(console.error);
 }
 
 module.exports = {
   createInteractivePost,
+  createPostFromJSON,
+  createJSONTemplate,
   templates,
-  loadTemplateFile
+  loadTemplateFile,
+  validateJSONData,
+  processJSONPostData
 };
+
+// JSONファイルからの記事作成機能
+async function createPostFromJSON(jsonFilePath) {
+  try {
+    console.log(`📂 JSONファイルを読み込んでいます: ${jsonFilePath}`);
+    
+    // JSONファイルの存在確認
+    if (!fs.existsSync(jsonFilePath)) {
+      throw new Error(`JSONファイルが見つかりません: ${jsonFilePath}`);
+    }
+    
+    // JSONファイルを読み込み
+    const jsonData = JSON.parse(fs.readFileSync(jsonFilePath, 'utf8'));
+    
+    // データの検証
+    validateJSONData(jsonData);
+    
+    // 複数記事の処理
+    if (Array.isArray(jsonData)) {
+      console.log(`📝 ${jsonData.length}件の記事を処理します...`);
+      
+      for (let i = 0; i < jsonData.length; i++) {
+        const data = jsonData[i];
+        console.log(`\n🔄 [${i + 1}/${jsonData.length}] 処理中: ${data.title}`);
+        
+        try {
+          const postData = await processJSONPostData(data);
+          await createContentfulPost(postData);
+          
+          // 連続投稿の場合は少し待機
+          if (i < jsonData.length - 1) {
+            console.log('⏳ 次の記事まで2秒待機...');
+            await new Promise(resolve => setTimeout(resolve, 2000));
+          }
+        } catch (error) {
+          console.error(`❌ 記事「${data.title}」の作成に失敗しました:`, error.message);
+          continue; // 次の記事に進む
+        }
+      }
+      
+      console.log('\n✅ 全ての記事の処理が完了しました！');
+    } else {
+      // 単一記事の処理
+      console.log(`📝 記事を処理します: ${jsonData.title}`);
+      const postData = await processJSONPostData(jsonData);
+      await createContentfulPost(postData);
+    }
+    
+  } catch (error) {
+    console.error('❌ JSONファイルからの記事作成に失敗しました:', error.message);
+    throw error;
+  }
+}
+
+// JSON データの検証
+function validateJSONData(data) {
+  const requiredFields = ['title', 'category'];
+  const articles = Array.isArray(data) ? data : [data];
+  
+  articles.forEach((article, index) => {
+    const prefix = Array.isArray(data) ? `[${index + 1}] ` : '';
+    
+    // 必須フィールドの確認
+    for (const field of requiredFields) {
+      if (!article[field]) {
+        throw new Error(`${prefix}必須フィールド「${field}」が不足しています`);
+      }
+    }
+    
+    // テンプレートが指定されている場合の確認
+    if (article.template && !templates[article.template]) {
+      throw new Error(`${prefix}不正なテンプレート「${article.template}」が指定されています`);
+    }
+    
+    // タグの形式確認
+    if (article.tags && !Array.isArray(article.tags)) {
+      throw new Error(`${prefix}タグは配列形式で指定してください`);
+    }
+  });
+}
+
+// JSON データを記事データに変換
+async function processJSONPostData(data) {
+  const now = new Date();
+  
+  // スラッグの生成
+  const slug = data.slug || generateSlug(data.title);
+  
+  // テンプレートの適用
+  let content = data.content || '';
+  if (data.template && templates[data.template]) {
+    const template = templates[data.template];
+    content = loadTemplateFile(data.template);
+    
+    // テンプレート内の変数置換
+    content = content.replace(/\{\{title\}\}/g, data.title);
+    content = content.replace(/\[製品名\]/g, data.title);
+    content = content.replace(/\[ニュースタイトル\]/g, data.title);
+  }
+  
+  // カスタム変数の置換（テンプレート使用の有無に関わらず実行）
+  if (data.variables) {
+    Object.keys(data.variables).forEach(key => {
+      const regex = new RegExp(`\\{\\{${key}\\}\\}`, 'g');
+      content = content.replace(regex, data.variables[key]);
+    });
+  }
+  
+  // 日付の処理
+  const publishedAt = data.publishedAt ? new Date(data.publishedAt).toISOString() : now.toISOString();
+  
+  // 記事データの構築
+  const postData = {
+    title: data.title,
+    slug: slug,
+    category: data.category,
+    excerpt: data.excerpt || `${data.title}に関する記事です。`,
+    tags: data.tags || [],
+    publishedAt: publishedAt,
+    author: data.author || 'ブログ管理者',
+    seoDescription: data.seoDescription || data.excerpt || `${data.title}に関する記事です。`,
+    content: content
+  };
+  
+  return postData;
+}
+
+// JSON テンプレートファイルの作成
+async function createJSONTemplate(templateType = 'basic') {
+  const templatesDir = path.join(__dirname, '..', 'templates');
+  
+  // templatesディレクトリが存在しない場合は作成
+  if (!fs.existsSync(templatesDir)) {
+    fs.mkdirSync(templatesDir, { recursive: true });
+  }
+  
+  let templateContent;
+  
+  switch (templateType) {
+    case 'single':
+      templateContent = {
+        title: "記事タイトル",
+        slug: "article-slug",
+        category: "テクノロジー",
+        template: "product-review",
+        excerpt: "この記事の概要を150文字程度で記載してください。",
+        tags: ["タグ1", "タグ2"],
+        author: "著者名",
+        publishedAt: "2025-01-01T00:00:00.000Z",
+        seoDescription: "SEO用の説明文",
+        variables: {
+          productName: "製品名",
+          price: "価格",
+          customField: "カスタムフィールド"
+        },
+        content: "# カスタムコンテンツ\n\nここに記事の内容を記載..."
+      };
+      break;
+      
+    case 'multiple':
+      templateContent = [
+        {
+          title: "記事1のタイトル",
+          category: "レビュー",
+          template: "product-review",
+          excerpt: "記事1の概要",
+          tags: ["レビュー", "製品"]
+        },
+        {
+          title: "記事2のタイトル",
+          category: "ニュース",
+          template: "news",
+          excerpt: "記事2の概要",
+          tags: ["ニュース", "テクノロジー"]
+        }
+      ];
+      break;
+      
+    default:
+      templateContent = {
+        title: "記事タイトル",
+        category: "テクノロジー",
+        excerpt: "記事の概要",
+        tags: ["タグ1", "タグ2"],
+        author: "著者名"
+      };
+  }
+  
+  const filename = `post-template-${templateType}.json`;
+  const filepath = path.join(templatesDir, filename);
+  
+  try {
+    fs.writeFileSync(filepath, JSON.stringify(templateContent, null, 2), 'utf8');
+    console.log(`📝 JSONテンプレートを作成しました: ${filepath}`);
+    console.log(`📖 編集: code ${filepath}`);
+    return filepath;
+  } catch (error) {
+    console.error('❌ JSONテンプレート作成に失敗しました:', error.message);
+    throw error;
+  }
+}

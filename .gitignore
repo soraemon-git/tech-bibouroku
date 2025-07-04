@@ -9,6 +9,9 @@ dist/
 # ドラフト（ローカルのみ）
 drafts/
 
+# 記事データ（ローカルのみ）
+articles/
+
 # 環境設定
 .env
 .env.local

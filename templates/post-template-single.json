@@ -1,0 +1,20 @@
+{
+  "title": "記事タイトル",
+  "slug": "article-slug",
+  "category": "テクノロジー",
+  "template": "product-review",
+  "excerpt": "この記事の概要を150文字程度で記載してください。",
+  "tags": [
+    "タグ1",
+    "タグ2"
+  ],
+  "author": "著者名",
+  "publishedAt": "2025-01-01T00:00:00.000Z",
+  "seoDescription": "SEO用の説明文",
+  "variables": {
+    "productName": "製品名",
+    "price": "価格",
+    "customField": "カスタムフィールド"
+  },
+  "content": "# カスタムコンテンツ\n\nここに記事の内容を記載..."
+}

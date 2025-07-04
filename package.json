@@ -11,7 +11,9 @@
     "deploy": "npm run build && node tools/deploy.js",
     "content-sync": "node tools/content-sync.js",
     "create-post": "node scripts/create-post.js",
-    "new-post": "node scripts/create-post.js"
+    "new-post": "node scripts/create-post.js",
+    "create-json-template": "node scripts/create-post.js --template",
+    "post-from-json": "node scripts/create-post.js --json"
   },
   "keywords": [
     "blog",

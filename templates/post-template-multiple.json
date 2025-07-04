@@ -1,0 +1,22 @@
+[
+  {
+    "title": "記事1のタイトル",
+    "category": "レビュー",
+    "template": "product-review",
+    "excerpt": "記事1の概要",
+    "tags": [
+      "レビュー",
+      "製品"
+    ]
+  },
+  {
+    "title": "記事2のタイトル",
+    "category": "ニュース",
+    "template": "news",
+    "excerpt": "記事2の概要",
+    "tags": [
+      "ニュース",
+      "テクノロジー"
+    ]
+  }
+]
