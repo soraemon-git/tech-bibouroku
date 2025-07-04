@@ -2,7 +2,13 @@
     <ul class="nav-list">
         {% for item in site.navigation %}
         <li class="nav-item">
-            <a href="{{ item.url }}" class="nav-link{% if page.url == item.url %} nav-link--active{% endif %}">
+            {% set isActive = false %}
+            {% if item.url == '/blog/' %}
+                {% set isActive = page.url.startsWith('/blog/') %}
+            {% else %}
+                {% set isActive = page.url == item.url %}
+            {% endif %}
+            <a href="{{ item.url }}" class="nav-link{% if isActive %} nav-link--active{% endif %}">
                 {{ item.text }}
             </a>
         </li>

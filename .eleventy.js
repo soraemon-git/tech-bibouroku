@@ -1,11 +1,9 @@
-console.log('=== .eleventy.js が読み込まれました ===');
 require('dotenv').config();
-console.log('=== dotenv設定完了 ===');
 
 const markdownIt = require('markdown-it');
+const { paginate, paginateCategory } = require('./src/_includes/utils/pagination');
 
 module.exports = function(eleventyConfig) {
-  console.log('=== 11ty設定関数が実行されました ===');
   
   // Markdown設定
   const md = markdownIt({
@@ -19,15 +17,6 @@ module.exports = function(eleventyConfig) {
     return md.render(content);
   });
   
-  // ビルド開始時のログ
-  eleventyConfig.on('beforeBuild', () => {
-    console.log('=== 11ty ビルド開始 ===');
-  });
-
-  // ビルド完了時のログ
-  eleventyConfig.on('afterBuild', () => {
-    console.log('=== 11ty ビルド完了 ===');
-  });
   // パススルーコピー
   eleventyConfig.addPassthroughCopy("src/css");
   eleventyConfig.addPassthroughCopy("src/js");
@@ -62,6 +51,47 @@ module.exports = function(eleventyConfig) {
     return array.slice(start, end);
   });
 
+  // 数値計算フィルター追加
+  eleventyConfig.addFilter("max", function(array) {
+    if (!Array.isArray(array)) return array;
+    return Math.max(...array);
+  });
+
+  eleventyConfig.addFilter("min", function(array) {
+    if (!Array.isArray(array)) return array;
+    return Math.min(...array);
+  });
+
+  // 範囲生成フィルター追加
+  eleventyConfig.addFilter("range", function(start, end) {
+    const result = [];
+    for (let i = start; i <= end; i++) {
+      result.push(i);
+    }
+    return result;
+  });
+
+  // オブジェクトキー取得フィルター追加
+  eleventyConfig.addFilter("keys", function(obj) {
+    return Object.keys(obj || {});
+  });
+
+  // デフォルトフィルター追加
+  eleventyConfig.addFilter("default", function(value, defaultValue) {
+    return value !== undefined ? value : defaultValue;
+  });
+
+  // 配列結合フィルター追加
+  eleventyConfig.addFilter("join", function(array, separator) {
+    if (!Array.isArray(array)) return array;
+    return array.join(separator || '');
+  });
+
+  // オブジェクトダンプフィルター追加
+  eleventyConfig.addFilter("dump", function(obj) {
+    return JSON.stringify(obj, null, 2);
+  });
+
   // カテゴリー絞り込みフィルター追加
   eleventyConfig.addFilter("selectattr", function(array, attr, operator, value) {
     if (!array || !Array.isArray(array)) return [];
@@ -75,6 +105,10 @@ module.exports = function(eleventyConfig) {
         return array;
     }
   });
+
+  // ページネーション フィルター追加
+  eleventyConfig.addFilter("paginate", paginate);
+  eleventyConfig.addFilter("paginateCategory", paginateCategory);
 
   // コレクション追加：カテゴリー別記事
   eleventyConfig.addCollection("categoryPages", function(collectionApi) {

@@ -10,7 +10,7 @@ showRightSidebar: true
     <div class="container">
         <h2>最新記事</h2>
         <div class="posts-grid">
-            {% for post in posts | slice(0, 6) %}
+            {% for post in posts | slice(0, 10) %}
                 <article class="post-card">
                     <h3 class="post-card__title">
                         <a href="{{ post.url }}">{{ post.title }}</a>

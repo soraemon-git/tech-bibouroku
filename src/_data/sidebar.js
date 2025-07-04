@@ -74,8 +74,6 @@ module.exports = async function() {
       category: post.fields.category
     }));
 
-    console.log(`sidebar.js: Contentfulからカテゴリー${categories.length}件、人気記事${popularPosts.length}件を取得`);
-
     return {
       categories,
       popularPosts,
@@ -136,9 +134,6 @@ async function getDataFromPosts() {
     publishDate: post.publishDate,
     category: post.category
   }));
-
-  console.log(`sidebar.js: posts.jsからカテゴリー${categories.length}件、人気記事${popularPosts.length}件を生成`);
-  categories.forEach(cat => console.log(`- ${cat.name} (${cat.count}件)`));
 
   return {
     categories,

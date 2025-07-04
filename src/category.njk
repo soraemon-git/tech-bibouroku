@@ -1,13 +1,13 @@
 ---
 pagination:
-  data: categories
+  data: categoryPages
   size: 1
-  alias: categoryData
+  alias: categoryPageData
 layout: base.njk
-permalink: "{{ categoryData.permalink }}"
+permalink: "{{ categoryPageData.permalink }}"
 eleventyComputed:
-  title: "{{ categoryData.title }}"
-  description: "{{ categoryData.description }}"
+  title: "{{ categoryPageData.title }}"
+  description: "{{ categoryPageData.description }}"
 showLeftSidebar: false
 showRightSidebar: false
 ---
@@ -15,16 +15,19 @@ showRightSidebar: false
 <div class="content-wrapper">
   <main class="main-content">
     <div class="blog-header">
-      <h1>{{ categoryData.name }}の記事</h1>
-      <p>{{ categoryData.description }}</p>
+      <h1>{{ categoryPageData.name }}の記事</h1>
+      <p>{{ categoryPageData.description }}</p>
+      {% if categoryPageData.pagination.totalPages > 1 %}
+        <div class="pagination-info">
+          <span>{{ categoryPageData.pagination.totalItems }}件中 {{ categoryPageData.pagination.startItem }}～{{ categoryPageData.pagination.endItem }}件目</span>
+        </div>
+      {% endif %}
     </div>
 
     <div class="blog-posts">
-      {% set categoryPosts = posts | selectattr('category', 'equalto', categoryData.name) %}
-      
-      {% if categoryPosts | length > 0 %}
+      {% if categoryPageData.posts | length > 0 %}
         <div class="posts-list">
-          {% for post in categoryPosts %}
+          {% for post in categoryPageData.posts %}
             <article class="post-item">
               <h2 class="post-item__title">
                 <a href="{{ post.url }}">{{ post.title }}</a>
@@ -48,10 +51,20 @@ showRightSidebar: false
             </article>
           {% endfor %}
         </div>
+        
+        {% if categoryPageData.pagination.totalPages > 1 %}
+          {% from "components/pagination.njk" import pagination as paginationMacro %}
+          {{ paginationMacro(
+            categoryPageData.pagination.currentPage,
+            categoryPageData.pagination.totalPages,
+            '/category/' + categoryPageData.slug + '/',
+            false
+          ) }}
+        {% endif %}
       {% else %}
         <div class="no-posts">
           <h3>まだ記事がありません</h3>
-          <p>{{ categoryData.name }}カテゴリーの記事は準備中です。しばらくお待ちください。</p>
+          <p>{{ categoryPageData.name }}カテゴリーの記事は準備中です。しばらくお待ちください。</p>
           <a href="/blog/" class="read-more">すべての記事を見る</a>
         </div>
       {% endif %}
@@ -76,5 +89,11 @@ showRightSidebar: false
 .no-posts p {
   color: var(--color-text-light);
   margin-bottom: var(--spacing-lg);
+}
+
+.pagination-info {
+  margin-top: var(--spacing-md);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-light);
 }
 </style>

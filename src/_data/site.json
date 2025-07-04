@@ -24,5 +24,10 @@
       "text": "About",
       "url": "/about/"
     }
-  ]
+  ],
+  "pagination": {
+    "postsPerPage": 15,
+    "categoryPostsPerPage": 20,
+    "searchResultsPerPage": 20
+  }
 }

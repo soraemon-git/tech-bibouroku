@@ -1,26 +1,33 @@
 ---
+pagination:
+  data: posts
+  size: 15
+  alias: paginatedPosts
+  reverse: true
 layout: base.njk
-title: 記事一覧
-description: テクノロジーに関する記事一覧
+permalink: "/blog/{% if pagination.pageNumber > 0 %}page/{{ pagination.pageNumber + 1 }}/{% endif %}"
+eleventyComputed:
+  title: "記事一覧{% if pagination.pageNumber > 0 %} - {{ pagination.pageNumber + 1 }}ページ目{% endif %}"
+  description: "テクノロジーに関する記事一覧{% if pagination.pageNumber > 0 %} - {{ pagination.pageNumber + 1 }}ページ目{% endif %}"
 showLeftSidebar: false
 showRightSidebar: false
 ---
 
 <section class="blog-page">
     <div class="container">
-        <h1>記事一覧</h1>
+        <h1>記事一覧{% if pagination.pageNumber > 0 %} - {{ pagination.pageNumber + 1 }}ページ目{% endif %}</h1>
         
         <div class="blog-actions">
-            <p class="blog-description">全{{ posts.length }}件の記事を新しい順に表示しています</p>
+            <p class="blog-description">全{{ posts.length }}件の記事を新しい順に表示しています{% if pagination.pageNumber > 0 %} ({{ pagination.pageNumber + 1 }}ページ目){% endif %}</p>
             <div class="blog-filter-actions">
                 <a href="/search/" class="btn btn--secondary">カテゴリで絞り込み検索 →</a>
             </div>
         </div>
         
         <div class="blog-results-section">
-            {% if posts and posts.length > 0 %}
+            {% if paginatedPosts and paginatedPosts.length > 0 %}
                 <div class="posts-list">
-                    {% for post in posts %}
+                    {% for post in paginatedPosts %}
                         <article class="post-item">
                             <div class="post-item__meta">
                                 <span class="post-item__category">{{ post.category }}</span>
@@ -42,6 +49,19 @@ showRightSidebar: false
                         </article>
                     {% endfor %}
                 </div>
+                
+                <!-- ページネーション -->
+                {% if pagination.pages and pagination.pages.length > 1 %}
+                    {% set currentPage = pagination.pageNumber + 1 %}
+                    {% set totalPages = pagination.pages.length %}
+                    {% from "components/pagination.njk" import pagination as paginationMacro %}
+                    {{ paginationMacro(
+                        currentPage,
+                        totalPages,
+                        '/blog/',
+                        false
+                    ) }}
+                {% endif %}
             {% else %}
                 <div class="no-posts">
                     <h3>記事がありません</h3>

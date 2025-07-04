@@ -29,8 +29,6 @@ function createSlug(name) {
 }
 
 module.exports = async function() {
-  console.log('=== categories.js が実行されました ===');
-  
   // Contentfulの設定をチェック
   if (!isContentfulConfigured()) {
     console.warn('Contentfulの設定が不完全です。posts.jsのサンプルデータからカテゴリーを抽出します。');
@@ -63,9 +61,6 @@ module.exports = async function() {
       showLeftSidebar: false,
       showRightSidebar: false
     }));
-
-    console.log(`カテゴリーページ自動生成（Contentfulから）: ${categories.length}件`);
-    categories.forEach(cat => console.log(`- ${cat.name} (${cat.slug})`));
 
     return categories;
 
@@ -109,9 +104,6 @@ async function getDataFromPosts() {
     showLeftSidebar: false,
     showRightSidebar: false
   }));
-
-  console.log(`カテゴリーページ自動生成（posts.jsから）: ${categories.length}件`);
-  categories.forEach(cat => console.log(`- ${cat.name} (${cat.slug})`));
 
   return categories;
 }

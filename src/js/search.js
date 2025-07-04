@@ -12,6 +12,8 @@ class BlogSearch {
     this.isLoading = false;
     this.currentQuery = '';
     this.currentCategory = '';
+    this.currentPage = 1;
+    this.itemsPerPage = 20;
     this.init();
   }
 
@@ -228,6 +230,7 @@ class BlogSearch {
 
   filterByCategory(category) {
     this.currentCategory = category;
+    this.currentPage = 1; // カテゴリ変更時にページをリセット
     
     if (!this.categoryData) {
       console.warn('カテゴリデータが読み込まれていません');
@@ -277,19 +280,29 @@ class BlogSearch {
     const resultsContainer = document.getElementById('search-results');
     if (!resultsContainer) return;
 
+    // ページネーションを適用
+    const totalResults = categoryInfo.posts.length;
+    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+    const endIndex = startIndex + this.itemsPerPage;
+    const paginatedResults = categoryInfo.posts.slice(startIndex, endIndex);
+    const totalPages = Math.ceil(totalResults / this.itemsPerPage);
+
     const resultsHTML = `
       <div class="search-results-header">
         <h2 class="search-results-count">
-          カテゴリ「${categoryInfo.name}」の記事 (${categoryInfo.posts.length}件)
+          カテゴリ「${categoryInfo.name}」の記事 (${totalResults}件)
         </h2>
+        ${totalPages > 1 ? `<p class="pagination-info">ページ ${this.currentPage} / ${totalPages}</p>` : ''}
       </div>
       <div class="search-results-list">
-        ${categoryInfo.posts.map(post => this.renderPostItem(post)).join('')}
+        ${paginatedResults.map(post => this.renderPostItem(post)).join('')}
       </div>
+      ${totalPages > 1 ? this.renderPagination(this.currentPage, totalPages) : ''}
     `;
 
     resultsContainer.innerHTML = resultsHTML;
     this.bindResultsInteraction();
+    this.bindPaginationEvents();
   }
 
   renderPostItem(post) {
@@ -386,6 +399,7 @@ class BlogSearch {
     this.showLoading();
     this.isLoading = true;
     this.currentQuery = query;
+    this.currentPage = 1; // 新しい検索時にページをリセット
 
     try {
       await this.loadSearchIndex();
@@ -471,19 +485,29 @@ class BlogSearch {
       return;
     }
 
+    // ページネーションを適用
+    const totalResults = results.length;
+    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+    const endIndex = startIndex + this.itemsPerPage;
+    const paginatedResults = results.slice(startIndex, endIndex);
+    const totalPages = Math.ceil(totalResults / this.itemsPerPage);
+
     const resultsHTML = `
       <div class="search-results-header">
         <h2 class="search-results-count">
-          「${query}」の検索結果 (${results.length}件)
+          「${query}」の検索結果 (${totalResults}件)
         </h2>
+        ${totalPages > 1 ? `<p class="pagination-info">ページ ${this.currentPage} / ${totalPages}</p>` : ''}
       </div>
       <div class="search-results-list">
-        ${results.map(post => this.createPostCard(post, query)).join('')}
+        ${paginatedResults.map(post => this.createPostCard(post, query)).join('')}
       </div>
+      ${totalPages > 1 ? this.renderPagination(this.currentPage, totalPages) : ''}
     `;
 
     resultsContainer.innerHTML = resultsHTML;
     this.bindResultsInteraction();
+    this.bindPaginationEvents();
   }
 
   createPostCard(post, query = '') {
@@ -647,6 +671,154 @@ class BlogSearch {
         item.style.transform = 'translateY(0)';
       });
     });
+  }
+
+  // ページネーション関連のメソッド
+  renderPagination(currentPage, totalPages) {
+    if (totalPages <= 1) return '';
+
+    const startPage = Math.max(1, currentPage - 2);
+    const endPage = Math.min(totalPages, currentPage + 2);
+    let paginationHTML = '<nav class="pagination" aria-label="ページネーション"><ul class="pagination-list">';
+
+    // 前のページ
+    if (currentPage > 1) {
+      paginationHTML += `
+        <li class="pagination-item">
+          <button class="pagination-link" data-page="${currentPage - 1}" aria-label="前のページ">
+            <span class="pagination-arrow pagination-arrow--prev">→</span>
+            前へ
+          </button>
+        </li>
+      `;
+    } else {
+      paginationHTML += `
+        <li class="pagination-item">
+          <span class="pagination-link disabled" aria-label="前のページ（利用不可）">
+            <span class="pagination-arrow pagination-arrow--prev">→</span>
+            前へ
+          </span>
+        </li>
+      `;
+    }
+
+    // 最初のページ
+    if (startPage > 1) {
+      paginationHTML += `
+        <li class="pagination-item">
+          <button class="pagination-link" data-page="1">1</button>
+        </li>
+      `;
+      if (startPage > 2) {
+        paginationHTML += `
+          <li class="pagination-item">
+            <span class="pagination-link disabled">...</span>
+          </li>
+        `;
+      }
+    }
+
+    // ページ番号
+    for (let page = startPage; page <= endPage; page++) {
+      if (page === currentPage) {
+        paginationHTML += `
+          <li class="pagination-item">
+            <span class="pagination-link current" aria-current="page">${page}</span>
+          </li>
+        `;
+      } else {
+        paginationHTML += `
+          <li class="pagination-item">
+            <button class="pagination-link" data-page="${page}">${page}</button>
+          </li>
+        `;
+      }
+    }
+
+    // 最後のページ
+    if (endPage < totalPages) {
+      if (endPage < totalPages - 1) {
+        paginationHTML += `
+          <li class="pagination-item">
+            <span class="pagination-link disabled">...</span>
+          </li>
+        `;
+      }
+      paginationHTML += `
+        <li class="pagination-item">
+          <button class="pagination-link" data-page="${totalPages}">${totalPages}</button>
+        </li>
+      `;
+    }
+
+    // 次のページ
+    if (currentPage < totalPages) {
+      paginationHTML += `
+        <li class="pagination-item">
+          <button class="pagination-link" data-page="${currentPage + 1}" aria-label="次のページ">
+            次へ
+            <span class="pagination-arrow">→</span>
+          </button>
+        </li>
+      `;
+    } else {
+      paginationHTML += `
+        <li class="pagination-item">
+          <span class="pagination-link disabled" aria-label="次のページ（利用不可）">
+            次へ
+            <span class="pagination-arrow">→</span>
+          </span>
+        </li>
+      `;
+    }
+
+    paginationHTML += '</ul></nav>';
+    return paginationHTML;
+  }
+
+  bindPaginationEvents() {
+    const paginationButtons = document.querySelectorAll('.pagination-link[data-page]');
+    paginationButtons.forEach(button => {
+      button.addEventListener('click', (e) => {
+        e.preventDefault();
+        const page = parseInt(button.dataset.page);
+        this.goToPage(page);
+      });
+    });
+  }
+
+  goToPage(page) {
+    this.currentPage = page;
+    
+    // 現在のクエリに基づいて結果を再表示
+    if (this.currentQuery) {
+      const results = this.performSearch(this.currentQuery);
+      this.displaySearchResults(results, this.currentQuery);
+    } else if (this.currentCategory !== null) {
+      const categoryInfo = this.findCategoryInfo(this.currentCategory);
+      if (categoryInfo) {
+        this.displayCategoryResults(categoryInfo);
+      }
+    }
+
+    // ページトップにスクロール
+    document.querySelector('.search-results-header')?.scrollIntoView({
+      behavior: 'smooth'
+    });
+  }
+
+  findCategoryInfo(categorySlug) {
+    if (!this.categoryData) return null;
+    
+    if (categorySlug === '' || categorySlug === 'すべて') {
+      return {
+        name: 'すべて',
+        slug: '',
+        posts: this.categoryData.categories.find(cat => cat.slug === '')?.posts || []
+      };
+    }
+    
+    return this.categoryData.categories.find(cat => cat.slug === categorySlug);
   }
 }
 

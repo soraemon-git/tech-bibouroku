@@ -1,0 +1,94 @@
+{% macro pagination(currentPage, totalPages, baseUrl = '', showInfo = false) %}
+  {% if totalPages > 1 %}
+    <nav class="pagination" aria-label="ページネーション">
+      <ul class="pagination-list">
+        <!-- 前のページ -->
+        {% if currentPage > 1 %}
+          <li class="pagination-item">
+            {% if baseUrl == '/blog/' %}
+              <a href="{% if currentPage == 2 %}{{ baseUrl }}{% else %}{{ baseUrl }}page/{{ currentPage - 1 }}/{% endif %}" class="pagination-link" aria-label="前のページ">
+            {% else %}
+              <a href="{{ baseUrl }}{% if currentPage == 2 %}{% else %}{{ currentPage - 1 }}/{% endif %}" class="pagination-link" aria-label="前のページ">
+            {% endif %}
+              <
+            </a>
+          </li>
+        {% else %}
+          <li class="pagination-item">
+            <span class="pagination-link disabled" aria-label="前のページ（利用不可）">
+              <
+          </li>
+        {% endif %}
+
+        <!-- ページ番号 -->
+        {% set startPage = [1, currentPage - 2] | max %}
+        {% set endPage = [totalPages, currentPage + 2] | min %}
+        
+        {% if startPage > 1 %}
+          <li class="pagination-item">
+            <a href="{{ baseUrl }}" class="pagination-link">1</a>
+          </li>
+          {% if startPage > 2 %}
+            <li class="pagination-item">
+              <span class="pagination-link disabled">...</span>
+            </li>
+          {% endif %}
+        {% endif %}
+
+        {% for page in range(startPage, endPage + 1) %}
+          <li class="pagination-item">
+            {% if page == currentPage %}
+              <span class="pagination-link current" aria-current="page">{{ page }}</span>
+            {% else %}
+              {% if baseUrl == '/blog/' %}
+                <a href="{% if page == 1 %}{{ baseUrl }}{% else %}{{ baseUrl }}page/{{ page }}/{% endif %}" class="pagination-link">{{ page }}</a>
+              {% else %}
+                <a href="{{ baseUrl }}{% if page == 1 %}{% else %}{{ page }}/{% endif %}" class="pagination-link">{{ page }}</a>
+              {% endif %}
+            {% endif %}
+          </li>
+        {% endfor %}
+
+        {% if endPage < totalPages %}
+          {% if endPage < totalPages - 1 %}
+            <li class="pagination-item">
+              <span class="pagination-link disabled">...</span>
+            </li>
+          {% endif %}
+          <li class="pagination-item">
+            {% if baseUrl == '/blog/' %}
+              <a href="{{ baseUrl }}page/{{ totalPages }}/" class="pagination-link">{{ totalPages }}</a>
+            {% else %}
+              <a href="{{ baseUrl }}{{ totalPages }}/" class="pagination-link">{{ totalPages }}</a>
+            {% endif %}
+          </li>
+        {% endif %}
+
+        <!-- 次のページ -->
+        {% if currentPage < totalPages %}
+          <li class="pagination-item">
+            {% if baseUrl == '/blog/' %}
+              <a href="{{ baseUrl }}page/{{ currentPage + 1 }}/" class="pagination-link" aria-label="次のページ">
+            {% else %}
+              <a href="{{ baseUrl }}{{ currentPage + 1 }}/" class="pagination-link" aria-label="次のページ">
+            {% endif %}
+              >
+            </a>
+          </li>
+        {% else %}
+          <li class="pagination-item">
+            <span class="pagination-link disabled" aria-label="次のページ（利用不可）">
+              >
+            </span>
+          </li>
+        {% endif %}
+      </ul>
+      
+      {% if showInfo %}
+        <div class="pagination-info">
+          {{ currentPage }} / {{ totalPages }} ページ
+        </div>
+      {% endif %}
+    </nav>
+  {% endif %}
+{% endmacro %}

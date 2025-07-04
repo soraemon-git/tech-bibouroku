@@ -8,6 +8,7 @@
 @import 'components/footer.css';
 @import 'components/sidebar.css';
 @import 'components/search.css';
+@import 'components/pagination.css';
 @import 'layout/content-wrapper.css';
 @import 'utilities/responsive.css';
 
